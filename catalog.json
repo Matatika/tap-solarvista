@@ -1,0 +1,124 @@
+{
+  "streams": [
+    {
+      "tap_stream_id": "work-item_stream",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "assignedUserId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "assignedUserName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdOn": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "currentWorkflowStageDisplayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "currentWorkflowStageType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reference": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tags": {
+            "type": [
+              "null",
+              "array"
+            ]
+          },
+          "workItemTemplateDisplayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workItemTemplateId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workItemId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "stream": "work-item",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": "true"
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "customer_stream",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "reference": {
+            "type": [
+              "string"
+            ]
+          },
+          "nickname": {
+            "type": [
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "string"
+            ]
+          },
+          "terms-days": {
+            "type": [
+              "null",
+              "number"
+            ]
+          }
+        }
+      },
+      "stream": "customer",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

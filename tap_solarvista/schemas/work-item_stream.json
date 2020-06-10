@@ -1,0 +1,35 @@
+{
+    "properties": {
+        "assignedUserId": {
+            "type": ["null", "string"]
+        },
+        "assignedUserName": {
+            "type": ["null", "string"]
+        },
+        "createdOn": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "currentWorkflowStageDisplayName": {
+            "type": ["null", "string"]
+        },
+        "currentWorkflowStageType": {
+            "type": ["null", "string"]
+        },
+        "reference": {
+            "type": ["null", "string"]
+        },
+        "tags": {
+            "type": ["null", "array"]
+        },
+        "workItemTemplateDisplayName": {
+            "type": ["null", "string"]
+        },
+        "workItemTemplateId": {
+            "type": ["null", "string"]
+        },
+        "workItemId": {
+            "type": ["null", "string"]
+        }
+    }
+}
