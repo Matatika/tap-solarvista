@@ -1,6 +1,58 @@
 {
   "streams": [
     {
+      "tap_stream_id": "site_stream",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "reference": {
+            "type": [
+              "string"
+            ]
+          },
+          "nickname": {
+            "type": [
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "string"
+            ]
+          },
+          "floor-room": {
+            "type": [
+              "string"
+            ]
+          },
+          "building": {
+            "type": [
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      },
+      "stream": "site",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": "true"
+          }
+        }
+      ]
+    },
+    {
       "tap_stream_id": "work-item_stream",
       "key_properties": [],
       "schema": {

@@ -20,9 +20,36 @@ source ~/.virtualenvs/tap-solarvista/bin/activate
 pip install wheel
 python setup.py bdist_wheel
 pip install -e .
-tap-solarvista -c your_config.json --discover > catalog.json
-tap-solarvista -c your_config.json --catalog catalog.json
+
+[do stuff e.g. discover, sync]
+
 deactivate
+```
+
+### discover
+Fetch all the streams we can sync
+
+```
+tap-solarvista -c your_config.json --discover > catalog.json
+```
+
+Update each stream inthe catalog with the streams we want to sync.
+
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": "true"
+          }
+        }
+      ]
+
+
+### sync
+Pull all the data
+
+```
+tap-solarvista -c your_config.json --catalog catalog.json
 ```
 
 ---

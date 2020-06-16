@@ -1,0 +1,25 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["string"]
+        },
+        "nickname": {
+            "type": ["string"]
+        },
+        "name": {
+            "type": ["string"]
+        },
+        "floor-room": {
+            "type": ["string"]
+        },
+        "building": {
+            "type": ["string"]
+        },
+        "address": {
+            "type": ["string"]
+        },
+        "status": {
+            "type": ["string"]
+        }
+    }
+}
