@@ -33,7 +33,7 @@ Fetch all the streams we can sync
 tap-solarvista -c your_config.json --discover > catalog.json
 ```
 
-Update each stream inthe catalog with the streams we want to sync.
+Update each stream in the catalog with the streams we want to sync or use the 'datasources' field in the configuration file.
 
       "metadata": [
         {

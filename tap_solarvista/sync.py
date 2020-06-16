@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import requests
 import singer
 from singer import metadata
@@ -21,12 +22,12 @@ def fetch_all_data(config, state, catalog):
         while True:
             tap_data = []
             response_data = fetch_data(config, stream, continuation)
+            continuation = None
             if response_data is not None:
-                continuation = response_data['continuationToken']
+                if 'continuationToken' in response_data and len(response_data['continuationToken']) > 0:
+                    continuation = response_data['continuationToken']
                 for row in response_data['rows']:
                     tap_data.append(row)
-            else:
-                continuation = None
 
             write_data(stream, tap_data)
                 
@@ -37,12 +38,19 @@ def fetch_all_data(config, state, catalog):
 def fetch_data(config, stream, continue_from):
     continuation = None
     if stream.tap_stream_id is not None:
+        body = None
         uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" % (config.get('account'), stream.stream)
         if continue_from is not None:
-            uri += "?continue=%s" % continue_from
-        headers = {"Authorization": "Bearer " + config.get("PAT")}
+            body = json.dumps({
+              "continuationToken": continue_from
+            })
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + config.get("PAT")
+        }
         LOGGER.info("POST " + uri)
-        with requests.post(uri, headers = headers) as response:
+        with requests.post(uri, data=body, headers = headers) as response:
             if response.status_code == 200:
                 response_data = response.json()
                 return response_data

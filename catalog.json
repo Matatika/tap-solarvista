@@ -47,7 +47,7 @@
         {
           "breadcrumb": [],
           "metadata": {
-            "selected": "true"
+            "selected": true
           }
         }
       ]
@@ -120,14 +120,52 @@
         }
       },
       "stream": "work-item",
-      "metadata": [
-        {
-          "breadcrumb": [],
-          "metadata": {
-            "selected": "true"
+      "metadata": []
+    },
+    {
+      "tap_stream_id": "equipment_stream",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "reference": {
+            "type": [
+              "string"
+            ]
+          },
+          "nickname": {
+            "type": [
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "string"
+            ]
+          },
+          "floor-room": {
+            "type": [
+              "string"
+            ]
+          },
+          "building": {
+            "type": [
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "string"
+            ]
           }
         }
-      ]
+      },
+      "stream": "equipment",
+      "metadata": []
     },
     {
       "tap_stream_id": "customer_stream",
@@ -163,14 +201,7 @@
         }
       },
       "stream": "customer",
-      "metadata": [
-        {
-          "breadcrumb": [],
-          "metadata": {
-            "selected": "true"
-          }
-        }
-      ]
+      "metadata": []
     }
   ]
 }

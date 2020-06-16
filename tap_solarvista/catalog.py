@@ -2,17 +2,23 @@
 from singer.catalog import Catalog, CatalogEntry
 import tap_solarvista.schemas as schemas
 
-def discover():
+def discover(selected_datasources):
     raw_schemas = schemas.load_schemas()
     streams = []
     for stream_id, schema in raw_schemas.items():
-        # TODO: populate any metadata and stream's key properties here..
         stream_metadata = []
+        # populate any metadata and stream's key properties here..
+        datasource = schemas.extract_datasource(stream_id)
+        if selected_datasources and datasource in selected_datasources:
+            stream_metadata = [
+                {'breadcrumb': (), 'metadata': {'selected': True}}
+            ]
+
         key_properties = []
         streams.append(
             CatalogEntry(
                 tap_stream_id=stream_id,
-                stream=schemas.extract_datasource(stream_id),
+                stream=datasource,
                 schema=schema,
                 key_properties=key_properties,
                 metadata=stream_metadata,

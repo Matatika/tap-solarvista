@@ -15,7 +15,8 @@ def main():
 
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
-        data_catalog = catalog.discover()
+        selected_datasources = args.config.get('datasources')
+        data_catalog = catalog.discover(selected_datasources)
         data_catalog.dump()
     # Otherwise run in sync mode
     else:

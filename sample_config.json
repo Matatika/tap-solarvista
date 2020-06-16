@@ -1,4 +1,7 @@
 {
+  "__comment__": "Specifying datasources here will overwrite stream metadata to select streams during --discover",
+  "datasources": ["customer", "equipment", "site", "work-item"],
+  
   "account": "[put your accountId here]",
   "PAT": "[put your PAT here]",
   "start_date": "2017-01-01T00:00:00Z"
