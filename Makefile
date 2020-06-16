@@ -1,14 +1,17 @@
 .PHONY: install test
 
 install:
+	pip install wheel
+	python setup.py bdist_wheel
 	pip install -e .
 
 test:
-	pytest --junitxml=./target/test_report.xml
+	pytest -o junit_family=xunit2 --junitxml=./target/test_report.xml
 
 clean:
 	rm -f .coverage
 	rm -rf .eggs/
+	rm -rf *.egg-info
 	rm -rf build/
 	rm -rf dist/
 	rm -rf logs/

@@ -27,7 +27,7 @@ def fetch_all_data(config, state, catalog):
                 if 'continuationToken' in response_data and len(response_data['continuationToken']) > 0:
                     continuation = response_data['continuationToken']
                 for row in response_data['rows']:
-                    tap_data.append(row)
+                    tap_data.append(row['rowData'])
 
             write_data(stream, tap_data)
                 

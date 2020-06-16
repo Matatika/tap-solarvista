@@ -1,7 +1,7 @@
 import unittest
-import tap_solarvista.schemas as schemas
+from tap_solarvista import schemas
 
-class test_schemas(unittest.TestCase):
+class TestSchemas(unittest.TestCase):
 
     def test_datasource_from_stream(self):
         self.assertEqual('customers', schemas.extract_datasource('customers_stream'))

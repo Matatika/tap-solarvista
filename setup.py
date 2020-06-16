@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup,find_packages
 
 setup(
     name="tap-solarvista",
     version="0.1.0",
     description="Singer.io tap for extracting data",
-    author="Stitch",
-    url="http://singer.io",
+    author="Matatika",
+    url="https://matatika.com",
     classifiers=["Programming Language :: Python :: 3 :: Only"],
     py_modules=["tap_solarvista"],
     install_requires=[
@@ -17,7 +17,7 @@ setup(
     [console_scripts]
     tap-solarvista=tap_solarvista:main
     """,
-    packages=["tap_solarvista"],
+    packages = find_packages(),
     package_data = {
         "schemas": ["tap_solarvista/schemas/*.json"]
     },

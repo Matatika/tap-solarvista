@@ -17,9 +17,7 @@ Create your own configuration with appropriate values from ```sample_config.json
 ```
 python3 -m venv ~/.virtualenvs/tap-solarvista
 source ~/.virtualenvs/tap-solarvista/bin/activate
-pip install wheel
-python setup.py bdist_wheel
-pip install -e .
+make install test
 
 [do stuff e.g. discover, sync]
 

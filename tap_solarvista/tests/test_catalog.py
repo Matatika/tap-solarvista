@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 import singer
-import tap_solarvista.catalog as catalog
+from tap_solarvista import catalog
 
 LOGGER = singer.get_logger()
 

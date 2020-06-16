@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import Mock, patch
 import singer
-import tap_solarvista.sync as sync
+import tap_solarvista
 
 try:
-    import tests.utils as test_utils
+    import tap_solarvista.tests.utils as test_utils
 except ImportError:
     import utils as test_utils
     
@@ -29,8 +29,10 @@ class TestSync(unittest.TestCase):
         site_data = {
             'continuationToken': 'moredata',
             'rows': [{
-                "reference": "GB-83320-S7",
-                "nickname": "Hamill-Lueilwitz/High Wycombe"
+                "rowData": {
+                    "reference": "GB-83320-S7",
+                    "nickname": "Hamill-Lueilwitz/High Wycombe"
+                }
             }]
         }
 
@@ -38,7 +40,7 @@ class TestSync(unittest.TestCase):
 
         global SINGER_MESSAGES
         SINGER_MESSAGES.clear()
-        sync.fetch_all_data({}, state, self.catalog)
+        tap_solarvista.sync.fetch_all_data({}, state, self.catalog)
 
         message_types = [type(m) for m in SINGER_MESSAGES]
 
