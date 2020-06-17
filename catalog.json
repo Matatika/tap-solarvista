@@ -30,7 +30,7 @@
               "string"
             ]
           },
-          "address": {
+          "address.postalCode": {
             "type": [
               "string"
             ]
@@ -43,10 +43,11 @@
         }
       },
       "stream": "site",
+      "stream_alias": "site",
       "metadata": []
     },
     {
-      "tap_stream_id": "work-item_stream",
+      "tap_stream_id": "workitem_stream",
       "key_properties": [],
       "schema": {
         "properties": {
@@ -112,16 +113,34 @@
           }
         }
       },
-      "stream": "work-item",
+      "stream": "workitem",
+      "stream_alias": "work-item",
       "metadata": []
     },
     {
       "tap_stream_id": "equipment_stream",
       "key_properties": [],
       "schema": {
-        "properties": {}
+        "properties": {
+          "reference": {
+            "type": [
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "string"
+            ]
+          },
+          "location": {
+            "type": [
+              "string"
+            ]
+          }
+        }
       },
       "stream": "equipment",
+      "stream_alias": "equipment",
       "metadata": [
         {
           "breadcrumb": [],
@@ -130,6 +149,32 @@
           }
         }
       ]
+    },
+    {
+      "tap_stream_id": "skill_stream",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "reference": {
+            "type": [
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      },
+      "stream": "skill",
+      "stream_alias": "skill",
+      "metadata": []
     },
     {
       "tap_stream_id": "customer_stream",
@@ -165,6 +210,7 @@
         }
       },
       "stream": "customer",
+      "stream_alias": "customer",
       "metadata": []
     }
   ]

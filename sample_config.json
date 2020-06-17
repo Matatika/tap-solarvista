@@ -3,6 +3,6 @@
   "datasources": ["customer", "equipment", "site", "work-item"],
   
   "account": "[put your accountId here]",
-  "PAT": "[put your PAT here]",
+  "personal_access_token": "[put your PAT here]",
   "start_date": "2017-01-01T00:00:00Z"
 }

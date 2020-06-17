@@ -47,7 +47,7 @@ def fetch_data(config, stream, continue_from):
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + config.get("PAT")
+            "Authorization": "Bearer " + config.get("personal_access_token")
         }
         LOGGER.info("POST " + uri)
         with requests.post(uri, data=body, headers = headers) as response:
