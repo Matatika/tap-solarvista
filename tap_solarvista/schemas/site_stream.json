@@ -15,7 +15,7 @@
         "building": {
             "type": ["string"]
         },
-        "address": {
+        "address.postalCode": {
             "type": ["string"]
         },
         "status": {

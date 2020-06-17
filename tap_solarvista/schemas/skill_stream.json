@@ -3,10 +3,10 @@
         "reference": {
             "type": ["string"]
         },
-        "description": {
+        "name": {
             "type": ["string"]
         },
-        "location": {
+        "description": {
             "type": ["string"]
         }
     }

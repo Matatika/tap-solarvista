@@ -11,7 +11,7 @@ setup(
     py_modules=["tap_solarvista"],
     install_requires=[
         "singer-python>=5.0.12",
-        "requests",
+        "requests"
     ],
     entry_points="""
     [console_scripts]

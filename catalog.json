@@ -43,14 +43,7 @@
         }
       },
       "stream": "site",
-      "metadata": [
-        {
-          "breadcrumb": [],
-          "metadata": {
-            "selected": true
-          }
-        }
-      ]
+      "metadata": []
     },
     {
       "tap_stream_id": "work-item_stream",
@@ -126,46 +119,17 @@
       "tap_stream_id": "equipment_stream",
       "key_properties": [],
       "schema": {
-        "properties": {
-          "reference": {
-            "type": [
-              "string"
-            ]
-          },
-          "nickname": {
-            "type": [
-              "string"
-            ]
-          },
-          "name": {
-            "type": [
-              "string"
-            ]
-          },
-          "floor-room": {
-            "type": [
-              "string"
-            ]
-          },
-          "building": {
-            "type": [
-              "string"
-            ]
-          },
-          "address": {
-            "type": [
-              "string"
-            ]
-          },
-          "status": {
-            "type": [
-              "string"
-            ]
-          }
-        }
+        "properties": {}
       },
       "stream": "equipment",
-      "metadata": []
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
     },
     {
       "tap_stream_id": "customer_stream",
