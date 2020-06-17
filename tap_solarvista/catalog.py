@@ -9,6 +9,9 @@ def discover(selected_datasources):
         stream_metadata = []
         # populate any metadata and stream's key properties here..
         datasource = schemas.extract_datasource(stream_id)
+        # stream id becomes the table name, strip invalid characters for downstream targets 
+        stream_id = stream_id.replace('-', '')
+        stream_name = datasource.replace('-', '')
         if selected_datasources and datasource in selected_datasources:
             stream_metadata = [
                 {'breadcrumb': (), 'metadata': {'selected': True}}
@@ -18,7 +21,7 @@ def discover(selected_datasources):
         streams.append(
             CatalogEntry(
                 tap_stream_id=stream_id,
-                stream=datasource,
+                stream=stream_name,
                 schema=schema,
                 key_properties=key_properties,
                 metadata=stream_metadata,
@@ -27,7 +30,7 @@ def discover(selected_datasources):
                 database=None,
                 table=None,
                 row_count=None,
-                stream_alias=None,
+                stream_alias=datasource,
                 replication_method=None,
             )
         )

@@ -37,9 +37,9 @@ def fetch_all_data(config, state, catalog):
 
 def fetch_data(config, stream, continue_from):
     continuation = None
-    if stream.tap_stream_id is not None:
+    if stream.stream_alias is not None:
         body = None
-        uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" % (config.get('account'), stream.stream)
+        uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" % (config.get('account'), stream.stream_alias)
         if continue_from is not None:
             body = json.dumps({
               "continuationToken": continue_from

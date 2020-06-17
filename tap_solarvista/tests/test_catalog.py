@@ -25,11 +25,21 @@ class TestCatalog(unittest.TestCase):
         localCatalog = catalog.discover(['customer','site'])
         selected_streams = localCatalog.get_selected_streams({})
 
-        selected_stream_ids = [m.tap_stream_id for m in selected_streams]
+        selected_stream_ids = [s.tap_stream_id for s in selected_streams]
         self.assertEqual(selected_stream_ids,
                          ['site_stream',
                           'customer_stream'])
         
+    def test_catalog_streamname_reserved_chars(self):
+        localCatalog = catalog.discover(['work-item'])
+        
+        selected_streams = localCatalog.get_selected_streams({})
+        stream_names = [s.stream for s in selected_streams]
+        self.assertEqual(stream_names, ['workitem'], "Expect stream name to be stripped of invalid chars")
+
+        selected_streams = localCatalog.get_selected_streams({})
+        stream_aliases = [s.stream_alias for s in selected_streams]
+        self.assertEqual(stream_aliases, ['work-item'], "Expect stream alias to be datasource name")
         
 if __name__ == '__main__':
     unittest.main()
