@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: help prepare-dev test lint run
 
 VENV_NAME?=venv
@@ -5,6 +7,7 @@ VENV_ACTIVATE=. $(VENV_NAME)/bin/activate
 PYTHON=${VENV_NAME}/bin/python3
 
 MODULE_NAME=tap_solarvista
+MODULE_CMD=tap-solarvista
 
 .DEFAULT: help
 help:
@@ -41,7 +44,7 @@ lint: venv
 	${PYTHON} -m pylint ${MODULE_NAME}
 
 run: venv
-	${MODULE_NAME} --version
+	source $(VENV_NAME)/bin/activate &&	${MODULE_CMD} --version
 
 install:
 	${PYTHON} -m pip install -e .

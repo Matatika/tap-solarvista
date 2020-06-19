@@ -2,7 +2,7 @@
 from setuptools import setup,find_packages
 
 setup(
-    name="tap-solarvista",
+    name="tap_solarvista",
     version="0.1.0",
     description="Singer.io tap for extracting data",
     author="Matatika",
@@ -11,7 +11,10 @@ setup(
     py_modules=["tap_solarvista"],
     install_requires=[
         "singer-python>=5.0.12",
-        "requests"
+        "requests",
+    ],
+    tests_require=[
+        "mock",
     ],
     entry_points="""
     [console_scripts]

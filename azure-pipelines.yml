@@ -10,6 +10,10 @@ pool:
   vmImage: 'ubuntu-latest'
 strategy:
   matrix:
+    Python27:	
+      python.version: '2.7'
+    Python35:	
+      python.version: '3.5'
     Python36:
       python.version: '3.6'
     Python37:
@@ -21,8 +25,11 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- script: make install
+- script: make prepare-dev
   displayName: 'Install dependencies'
+
+- script: make lint run
+  displayName: 'Build, lint, run.'
 
 - script: |
     pip install pytest pytest-azurepipelines

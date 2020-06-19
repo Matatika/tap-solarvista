@@ -1,5 +1,7 @@
 """Singer.io tap that syncs data from Solarvista."""
 #!/usr/bin/env python3
+import argparse
+import pkg_resources
 import singer
 from singer import utils
 
@@ -12,6 +14,19 @@ LOGGER = singer.get_logger()
 @utils.handle_top_exception(LOGGER)
 def main():
     """Main entrypoint into this module, typically tap-solarvista."""
+
+    version = pkg_resources.require("tap_solarvista")[0].version
+
+    # Parse our args, before handing off to singer
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-v', '--version',
+        help='Print version',
+        action='version', version=version)
+    our_args = parser.parse_args()
+    if our_args.version:
+        return
+
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
 
