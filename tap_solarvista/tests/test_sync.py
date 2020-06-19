@@ -1,6 +1,9 @@
 """ Test sync package """
 import unittest
-from unittest.mock import patch
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 import singer
 import tap_solarvista
 import tap_solarvista.tests.utils as test_utils
