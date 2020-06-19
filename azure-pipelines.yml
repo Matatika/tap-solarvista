@@ -31,6 +31,9 @@ steps:
 - script: make lint run
   displayName: 'Build, lint, run.'
 
+- script: make install
+  displayName: 'Install'
+
 - script: |
     pip install pytest pytest-azurepipelines
     pytest

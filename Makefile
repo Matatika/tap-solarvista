@@ -46,8 +46,9 @@ lint: venv
 run: venv
 	source $(VENV_NAME)/bin/activate &&	${MODULE_CMD} --version
 
+# install locally, not using venv
 install:
-	${PYTHON} -m pip install -e .
+	python -m pip install -e .
 
 clean:
 	rm -f .coverage
