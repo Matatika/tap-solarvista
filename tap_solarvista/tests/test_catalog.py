@@ -24,9 +24,9 @@ class TestCatalog(unittest.TestCase):
         selected_streams = local_catalog.get_selected_streams({})
 
         selected_stream_ids = [s.tap_stream_id for s in selected_streams]
-        self.assertEqual(selected_stream_ids,
-                         ['site_stream',
-                          'customer_stream'])
+        self.assertEqual(sorted(selected_stream_ids),
+                         ['customer_stream',
+                          'site_stream'])
 
     def test_catalog_streamname_reserved_chars(self):
         """ Test catalog strips reserved characters that are used as downstream table names """
