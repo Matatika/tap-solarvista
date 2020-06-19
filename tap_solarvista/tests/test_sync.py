@@ -45,12 +45,9 @@ class TestSync(unittest.TestCase):
 
         tap_solarvista.sync.fetch_all_data({}, state, self.catalog)
 
-        message_types = [type(m) for m in SINGER_MESSAGES]
-
-
-        self.assertEqual(message_types,
-                         [singer.SchemaMessage,
-                          singer.RecordMessage])
+        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
