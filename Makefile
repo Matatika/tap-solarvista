@@ -21,6 +21,8 @@ help:
 	@echo "       build and run pylint and mypy"
 	@echo "make run"
 	@echo "       run the module"
+	@echo "make doc"
+	@echo "       build sphinx documentation"
 
 prepare-dev:
 	# sudo apt-get -y install python3.5 python3-pip
@@ -34,6 +36,8 @@ $(VENV_NAME)/bin/activate: setup.py
 	${PYTHON} -m pip install -U pip setuptools
 	${PYTHON} -m pip install pytest
 	${PYTHON} -m pip install pylint
+	${PYTHON} -m pip install sphinx
+	${PYTHON} -m pip install sphinx-rtd-theme
 	${PYTHON} -m pip install -e .
 	touch $(VENV_NAME)/bin/activate
 
@@ -50,7 +54,11 @@ run: venv
 install:
 	python -m pip install -e .
 
+doc: venv
+	$(VENV_ACTIVATE) && cd docs; make gen html
+
 clean:
+	rm -rf docs/build/
 	rm -f .coverage
 	rm -rf .eggs/
 	rm -rf *.egg-info
