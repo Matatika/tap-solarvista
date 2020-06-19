@@ -12,12 +12,20 @@ This tap:
 - Incrementally pulls data based on the input state for Work-Items
 
 
+### development
+Use make to build, test and run.
+```
+make help
+```
+
+### run locally
+
 Create your own configuration with appropriate values from ```sample_config.json```.  See GDrive/Developers/Solarvista/Getting API access to Solarvista LIVE.docx
 
 ```
 python3 -m venv ~/.virtualenvs/tap-solarvista
 source ~/.virtualenvs/tap-solarvista/bin/activate
-make install test
+make install
 
 [do stuff e.g. discover, sync]
 

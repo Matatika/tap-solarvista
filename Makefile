@@ -10,6 +10,8 @@ MODULE_NAME=tap_solarvista
 help:
 	@echo "make prepare-dev"
 	@echo "       prepare development environment, use only once"
+	@echo "make clean"
+	@echo "       clean the development environment, you'll need to 'make prepare-dev' again after this"
 	@echo "make test"
 	@echo "       build and test the module"
 	@echo "make lint"
@@ -18,7 +20,7 @@ help:
 	@echo "       run the module"
 
 prepare-dev:
-	sudo apt-get -y install python3.5 python3-pip
+	# sudo apt-get -y install python3.5 python3-pip
 	python3 -m pip install virtualenv
 	make venv
 
@@ -29,20 +31,20 @@ $(VENV_NAME)/bin/activate: setup.py
 	${PYTHON} -m pip install -U pip setuptools
 	${PYTHON} -m pip install pytest
 	${PYTHON} -m pip install pylint
-	${PYTHON} -m pip install mypy
 	${PYTHON} -m pip install -e .
 	touch $(VENV_NAME)/bin/activate
-
 
 test: venv
 	${PYTHON} -m pytest -o junit_family=xunit2 --junitxml=./target/test_report.xml
 
 lint: venv
 	${PYTHON} -m pylint ${MODULE_NAME}
-	${PYTHON} -m mypy ${MODULE_NAME}
 
 run: venv
 	${MODULE_NAME} --version
+
+install:
+	${PYTHON} -m pip install -e .
 
 clean:
 	rm -f .coverage
@@ -53,8 +55,6 @@ clean:
 	rm -rf dist/
 	rm -rf logs/
 	rm -rf target/
+	rm -rf .pytest_cache
 	find . -type f -name '*.pyc' -delete
 	find . -depth -type d -name '__pycache__' -delete
-
-
-
