@@ -24,6 +24,7 @@ class TestSync(unittest.TestCase):
     def setUp(self):
         """ Setup the test objects and helpers """
         self.catalog = test_utils.discover_catalog('site')
+        del SINGER_MESSAGES[:]  # prefer SINGER_MESSAGES.clear(), only available on python3
 
     @patch('tap_solarvista.sync.fetch_data')
     def test_sync_basic(self, mock_fetch):
@@ -42,7 +43,6 @@ class TestSync(unittest.TestCase):
 
         mock_fetch.side_effect = [site_data, None]
 
-        SINGER_MESSAGES.clear()
         tap_solarvista.sync.fetch_all_data({}, state, self.catalog)
 
         message_types = [type(m) for m in SINGER_MESSAGES]
