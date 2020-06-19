@@ -24,7 +24,7 @@ help:
 
 prepare-dev:
 	# sudo apt-get -y install python3.5 python3-pip
-	python3 -m pip install virtualenv
+	python -m pip install virtualenv
 	make venv
 
 # Requirements are in setup.py, so whenever setup.py is changed, re-run installation of dependencies.
