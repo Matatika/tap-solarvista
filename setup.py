@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 from setuptools import setup,find_packages
 
+test_deps = [
+    'pytest',
+    'pylint',
+    "mock",
+]
+
+extras = {
+    'test': test_deps,
+}
+
 setup(
     name="tap_solarvista",
     version="0.1.0",
@@ -13,9 +23,8 @@ setup(
         "singer-python>=5.0.12",
         "requests",
     ],
-    tests_require=[
-        "mock",
-    ],
+    tests_require=test_deps,
+    extras_require=extras,
     entry_points="""
     [console_scripts]
     tap-solarvista=tap_solarvista:main

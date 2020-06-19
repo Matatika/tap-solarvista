@@ -34,10 +34,9 @@ venv: $(VENV_NAME)/bin/activate
 $(VENV_NAME)/bin/activate: setup.py
 	test -d $(VENV_NAME) || virtualenv -p python3 $(VENV_NAME)
 	${PYTHON} -m pip install -U pip setuptools
-	${PYTHON} -m pip install pytest
-	${PYTHON} -m pip install pylint
 	${PYTHON} -m pip install sphinx
 	${PYTHON} -m pip install sphinx-rtd-theme
+	${PYTHON} -m pip install -e .[test]
 	${PYTHON} -m pip install -e .
 	touch $(VENV_NAME)/bin/activate
 
@@ -52,6 +51,7 @@ run: venv
 
 # install locally, not using venv
 install:
+	python -m pip install -e .[test]
 	python -m pip install -e .
 
 doc: venv
