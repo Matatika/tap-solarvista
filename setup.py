@@ -14,7 +14,7 @@ setup(
         "requests",
     ],
     tests_require=[
-        "mock",
+        "unittest",
     ],
     entry_points="""
     [console_scripts]
