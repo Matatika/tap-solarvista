@@ -1,3 +1,4 @@
+"""Singer.io tap that syncs data from Solarvista."""
 #!/usr/bin/env python3
 import singer
 from singer import utils
@@ -10,6 +11,7 @@ LOGGER = singer.get_logger()
 
 @utils.handle_top_exception(LOGGER)
 def main():
+    """Main entrypoint into this module, typically tap-solarvista."""
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
 
@@ -23,7 +25,7 @@ def main():
         if args.catalog:
             data_catalog = args.catalog
         else:
-            data_catalog = catalog.discover()
+            data_catalog = catalog.discover({})
         sync.fetch_all_data(args.config, args.state, data_catalog)
 
 

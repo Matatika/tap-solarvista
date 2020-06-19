@@ -1,15 +1,17 @@
+"""catalog is responsible for inspecting which streams the target solarvista account supports."""
 #!/usr/bin/env python3
 from singer.catalog import Catalog, CatalogEntry
 import tap_solarvista.schemas as schemas
 
 def discover(selected_datasources):
+    """Discover the streams this module can sync."""
     raw_schemas = schemas.load_schemas()
     streams = []
     for stream_id, schema in raw_schemas.items():
         stream_metadata = []
         # populate any metadata and stream's key properties here..
         datasource = schemas.extract_datasource(stream_id)
-        # stream id becomes the table name, strip invalid characters for downstream targets 
+        # stream id becomes the table name, strip invalid characters for downstream targets
         stream_id = stream_id.replace('-', '')
         stream_name = datasource.replace('-', '')
         if selected_datasources and datasource in selected_datasources:
@@ -35,4 +37,3 @@ def discover(selected_datasources):
             )
         )
     return Catalog(streams)
-
