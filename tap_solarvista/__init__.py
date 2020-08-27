@@ -23,7 +23,7 @@ def main():
         '-v', '--version',
         help='Print version',
         action='version', version=version)
-    
+
     parser.add_argument(
         '-c', '--config',
         help='Config file',
@@ -45,7 +45,7 @@ def main():
         '-d', '--discover',
         action='store_true',
         help='Do schema discovery')
-    
+
     # handle version, but carry on to singer for the rest
     parser.parse_args()
 
