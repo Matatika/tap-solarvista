@@ -3,6 +3,7 @@
 import json
 import requests
 import singer
+from flatten_json import flatten
 
 LOGGER = singer.get_logger()
 
@@ -28,7 +29,14 @@ def fetch_all_data(config, state, catalog):
                         and len(response_data['continuationToken']) > 0):
                     continuation = response_data['continuationToken']
                 for row in response_data['rows']:
-                    tap_data.append(row['rowData'])
+                    if stream.tap_stream_id == 'workitem_stream':
+                        tap_data.append(
+                            transform_workitemdetail(
+                                fetch_workitemdetail(config, row['rowData']['workItemId'])
+                            )
+                        )
+                    else:
+                        tap_data.append(row['rowData'])
 
             write_data(stream, tap_data)
 
@@ -57,6 +65,28 @@ def fetch_data(config, stream, continue_from):
                 return response_data
             LOGGER.error("[%s] POST %s", str(response.status_code), uri)
     return None
+
+def fetch_workitemdetail(config, workitem_id):
+    """ Fetch workitem detail """
+    if workitem_id is not None:
+        uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s" \
+            % (config.get('account'), workitem_id)
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + config.get("personal_access_token")
+        }
+        LOGGER.info("GET %s", uri)
+        with requests.get(uri, headers=headers) as response:
+            if response.status_code == 200:
+                response_data = response.json()
+                return response_data
+            LOGGER.error("[%s] GET %s", str(response.status_code), uri)
+    return None
+
+def transform_workitemdetail(workitem_detail):
+    """ Construct work-item from from workitem detail """
+    return flatten(workitem_detail)
 
 def write_data(stream, tap_data):
     """ Write the fetched data to singer records and update state """

@@ -19,6 +19,8 @@ help:
 	@echo "       build and test the module"
 	@echo "make lint"
 	@echo "       build and run pylint and mypy"
+	@echo "make install"
+	@echo "       install this module locally and use your ide with your local virtual environment instead of this makefile's venv"
 	@echo "make run"
 	@echo "       run the module"
 	@echo "make doc"
@@ -47,7 +49,7 @@ lint: venv
 	${PYTHON} -m pylint ${MODULE_NAME}
 
 run: venv
-	source $(VENV_NAME)/bin/activate &&	${MODULE_CMD} --version
+	source $(VENV_NAME)/bin/activate && ${MODULE_CMD} --version
 
 # install locally, not using venv
 install:

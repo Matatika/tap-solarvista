@@ -1,217 +1,265 @@
 {
   "streams": [
     {
-      "tap_stream_id": "site_stream",
-      "key_properties": [],
+      "stream": "workitem", 
+      "tap_stream_id": "workitem_stream", 
+      "key_properties": [], 
+      "stream_alias": "work-item", 
+      "metadata": [
+        {
+          "breadcrumb": [], 
+          "metadata": {
+            "selected": true
+          }
+        }
+      ], 
       "schema": {
         "properties": {
+          "properties_price-inc-tax": {
+            "type": [
+              "null", 
+              "boolean"
+            ]
+          }, 
+          "properties_site_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_customer_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_equipment_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
           "reference": {
             "type": [
+              "null", 
               "string"
             ]
-          },
-          "nickname": {
+          }, 
+          "tags": {
+            "type": [
+              "null", 
+              "array"
+            ]
+          }, 
+          "properties_currency_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "currentWorkflowStageDisplayName": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "workItemId": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "workItemTemplateId": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_duration-hours": {
+            "type": [
+              "null", 
+              "number"
+            ]
+          }, 
+          "assignedUserName": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "workItemTemplateDisplayName": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_problem_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "currentWorkflowStageType": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_charge": {
+            "type": [
+              "null", 
+              "number"
+            ]
+          }, 
+          "assignedUserId": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "createdOn": {
             "type": [
               "string"
-            ]
-          },
-          "name": {
-            "type": [
-              "string"
-            ]
-          },
-          "floor-room": {
-            "type": [
-              "string"
-            ]
-          },
-          "building": {
-            "type": [
-              "string"
-            ]
-          },
-          "address.postalCode": {
-            "type": [
-              "string"
-            ]
-          },
+            ], 
+            "format": "date-time"
+          }
+        }
+      }
+    }, 
+    {
+      "stream": "customer", 
+      "tap_stream_id": "customer_stream", 
+      "key_properties": [], 
+      "stream_alias": "customer", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
           "status": {
             "type": [
               "string"
             ]
-          }
-        }
-      },
-      "stream": "site",
-      "stream_alias": "site",
-      "metadata": []
-    },
-    {
-      "tap_stream_id": "workitem_stream",
-      "key_properties": [],
-      "schema": {
-        "properties": {
-          "assignedUserId": {
+          }, 
+          "terms-days": {
             "type": [
-              "null",
-              "string"
+              "null", 
+              "number"
             ]
-          },
-          "assignedUserName": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "createdOn": {
-            "format": "date-time",
+          }, 
+          "nickname": {
             "type": [
               "string"
             ]
-          },
-          "currentWorkflowStageDisplayName": {
+          }, 
+          "name": {
             "type": [
-              "null",
               "string"
             ]
-          },
-          "currentWorkflowStageType": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "reference": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "tags": {
-            "type": [
-              "null",
-              "array"
-            ]
-          },
-          "workItemTemplateDisplayName": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "workItemTemplateId": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "workItemId": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
-      "stream": "workitem",
-      "stream_alias": "work-item",
-      "metadata": []
-    },
-    {
-      "tap_stream_id": "equipment_stream",
-      "key_properties": [],
-      "schema": {
-        "properties": {
+          }, 
           "reference": {
             "type": [
               "string"
             ]
-          },
+          }
+        }
+      }
+    }, 
+    {
+      "stream": "equipment", 
+      "tap_stream_id": "equipment_stream", 
+      "key_properties": [], 
+      "stream_alias": "equipment", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
           "description": {
             "type": [
               "string"
             ]
-          },
+          }, 
+          "reference": {
+            "type": [
+              "string"
+            ]
+          }, 
           "location": {
             "type": [
               "string"
             ]
           }
         }
-      },
-      "stream": "equipment",
-      "stream_alias": "equipment",
-      "metadata": [
-        {
-          "breadcrumb": [],
-          "metadata": {
-            "selected": true
-          }
-        }
-      ]
-    },
+      }
+    }, 
     {
-      "tap_stream_id": "skill_stream",
-      "key_properties": [],
+      "stream": "skill", 
+      "tap_stream_id": "skill_stream", 
+      "key_properties": [], 
+      "stream_alias": "skill", 
+      "metadata": [], 
       "schema": {
         "properties": {
-          "reference": {
-            "type": [
-              "string"
-            ]
-          },
           "name": {
             "type": [
               "string"
             ]
-          },
+          }, 
+          "reference": {
+            "type": [
+              "string"
+            ]
+          }, 
           "description": {
             "type": [
               "string"
             ]
           }
         }
-      },
-      "stream": "skill",
-      "stream_alias": "skill",
-      "metadata": []
-    },
+      }
+    }, 
     {
-      "tap_stream_id": "customer_stream",
-      "key_properties": [],
+      "stream": "site", 
+      "tap_stream_id": "site_stream", 
+      "key_properties": [], 
+      "stream_alias": "site", 
+      "metadata": [], 
       "schema": {
         "properties": {
-          "reference": {
+          "floor-room": {
             "type": [
               "string"
             ]
-          },
-          "nickname": {
+          }, 
+          "building": {
             "type": [
               "string"
             ]
-          },
+          }, 
           "name": {
             "type": [
               "string"
             ]
-          },
+          }, 
+          "reference": {
+            "type": [
+              "string"
+            ]
+          }, 
           "status": {
             "type": [
               "string"
             ]
-          },
-          "terms-days": {
+          }, 
+          "address.postalCode": {
             "type": [
-              "null",
-              "number"
+              "string"
+            ]
+          }, 
+          "nickname": {
+            "type": [
+              "string"
             ]
           }
         }
-      },
-      "stream": "customer",
-      "stream_alias": "customer",
-      "metadata": []
+      }
     }
   ]
 }

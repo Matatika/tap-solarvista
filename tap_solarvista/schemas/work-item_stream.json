@@ -30,6 +30,30 @@
         },
         "workItemId": {
             "type": ["null", "string"]
+        },
+        "properties_customer_id": {
+            "type": ["null", "string"]        
+        },
+        "properties_site_id": {
+            "type": ["null", "string"]
+        },
+        "properties_equipment_id": {
+            "type": ["null", "string"]
+        },
+        "properties_problem_id": {
+            "type": ["null", "string"]
+        },
+        "properties_charge": {
+            "type": ["null", "number"]
+        },
+        "properties_price-inc-tax": {
+            "type": ["null", "boolean"]
+        },
+        "properties_currency_id": {
+            "type": ["null", "string"]
+        },
+        "properties_duration-hours": {
+            "type": ["null", "number"]
         }
     }
 }

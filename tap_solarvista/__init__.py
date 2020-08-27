@@ -23,9 +23,31 @@ def main():
         '-v', '--version',
         help='Print version',
         action='version', version=version)
-    our_args = parser.parse_args()
-    if our_args.version:
-        return
+    
+    parser.add_argument(
+        '-c', '--config',
+        help='Config file',
+        required=True)
+
+    parser.add_argument(
+        '-s', '--state',
+        help='State file')
+
+    parser.add_argument(
+        '-p', '--properties',
+        help='Property selections: DEPRECATED, Please use --catalog instead')
+
+    parser.add_argument(
+        '--catalog',
+        help='Catalog file')
+
+    parser.add_argument(
+        '-d', '--discover',
+        action='store_true',
+        help='Do schema discovery')
+    
+    # handle version, but carry on to singer for the rest
+    parser.parse_args()
 
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
