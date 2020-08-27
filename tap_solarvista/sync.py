@@ -87,22 +87,23 @@ def transform_workitemdetail(workitem_detail):
     """ Construct work-item from from workitem detail """
     return flatten_json(workitem_detail)
 
-def flatten_json(y):
+def flatten_json(unformated_json):
+    """ Flatten a json object, returning a single level underscore separated json structure """
     out = {}
 
-    def flatten(x, name=''):
-        if type(x) is dict:
-            for a in x:
-                flatten(x[a], name + a + '_')
-        elif type(x) is list:
+    def flatten(json_structure, name=''):
+        if isinstance(json_structure, dict):
+            for element in json_structure:
+                flatten(json_structure[element], name + element + '_')
+        elif isinstance(json_structure, list):
             i = 0
-            for a in x:
-                flatten(a, name + str(i) + '_')
+            for element in json_structure:
+                flatten(element, name + str(i) + '_')
                 i += 1
         else:
-            out[name[:-1]] = x
+            out[name[:-1]] = json_structure
 
-    flatten(y)
+    flatten(unformated_json)
     return out
 
 def write_data(stream, tap_data):
