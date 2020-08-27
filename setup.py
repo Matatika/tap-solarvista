@@ -22,7 +22,6 @@ setup(
     install_requires=[
         "singer-python>=5.0.12",
         "requests",
-        "flatten_json",
     ],
     tests_require=test_deps,
     extras_require=extras,

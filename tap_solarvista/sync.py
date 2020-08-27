@@ -3,7 +3,6 @@
 import json
 import requests
 import singer
-from flatten_json import flatten
 
 LOGGER = singer.get_logger()
 
@@ -86,7 +85,25 @@ def fetch_workitemdetail(config, workitem_id):
 
 def transform_workitemdetail(workitem_detail):
     """ Construct work-item from from workitem detail """
-    return flatten(workitem_detail)
+    return flatten_json(workitem_detail)
+
+def flatten_json(y):
+    out = {}
+
+    def flatten(x, name=''):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + '_')
+        elif type(x) is list:
+            i = 0
+            for a in x:
+                flatten(a, name + str(i) + '_')
+                i += 1
+        else:
+            out[name[:-1]] = x
+
+    flatten(y)
+    return out
 
 def write_data(stream, tap_data):
     """ Write the fetched data to singer records and update state """
