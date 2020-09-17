@@ -30,12 +30,14 @@ def fetch_all_data(config, state, catalog):
                 for row in response_data['rows']:
                     if stream.tap_stream_id == 'workitem_stream':
                         tap_data.append(
-                            transform_workitemdetail(
+                            flatten_json(
                                 fetch_workitemdetail(config, row['rowData']['workItemId'])
                             )
                         )
                     else:
-                        tap_data.append(row['rowData'])
+                        tap_data.append(
+                            flatten_json(row['rowData'])
+                        )
 
             write_data(stream, tap_data)
 
@@ -82,10 +84,6 @@ def fetch_workitemdetail(config, workitem_id):
                 return response_data
             LOGGER.error("[%s] GET %s", str(response.status_code), uri)
     return None
-
-def transform_workitemdetail(workitem_detail):
-    """ Construct work-item from from workitem detail """
-    return flatten_json(workitem_detail)
 
 def flatten_json(unformated_json):
     """ Flatten a json object, returning a single level underscore separated json structure """

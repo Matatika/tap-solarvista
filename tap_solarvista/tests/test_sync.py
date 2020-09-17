@@ -137,7 +137,7 @@ class TestSync(unittest.TestCase):
 
     def test_transform_workitemdetail(self):
         """ Test workitem sync returns schema and full work-item detail records """
-        result = tap_solarvista.sync.transform_workitemdetail(MOCK_WORKITEM_DETAIL)
+        result = tap_solarvista.sync.flatten_json(MOCK_WORKITEM_DETAIL)
         expected = {
             'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
             'reference': "AP0002",
@@ -156,6 +156,64 @@ class TestSync(unittest.TestCase):
         }
         self.assertEqual(expected, result)
 
+    @patch('tap_solarvista.sync.fetch_data')
+    def test_sync_site(self, mock_fetch_data):
+        """ Test site sync returns all record elements """
+        self.catalog = test_utils.discover_catalog('site')
+        state = {}
+
+        site_data = {
+            'continuationToken': 'moredata',
+            'rows': [{
+                "rowData": {
+                    "reference": "GB-44271-W3",
+                    "nickname": "Lucky Gold Coin/Cheltenham",
+                    "name": "Lucky Gold Coin Casinos plc",
+                    "floor-room": "Unit 14",
+                    "building": "Swift Tower",
+                    "address": {
+                        "addressLine1": "06 Esch Alley",
+                        "addressLine2": None,
+                        "city": "Cheltenham",
+                        "administrativeRegion2": "Gloucestershire",
+                        "administrativeRegion1": "England",
+                        "country": "United Kingdom",
+                        "postalCode": "GL51 0TF"
+                    },
+                    "customer": {
+                        "Id": "GB-38884-E10",
+                    },
+                }
+            }]
+        }
+
+        mock_fetch_data.side_effect = [site_data, None]
+
+        tap_solarvista.sync.fetch_all_data({}, state, self.catalog)
+
+        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [
+            {'reference': "GB-44271-W3",
+            'nickname': "Lucky Gold Coin/Cheltenham",
+            'name': "Lucky Gold Coin Casinos plc",
+            'floor-room': 'Unit 14',
+            'building': 'Swift Tower',
+            'address_addressLine1': "06 Esch Alley",
+            'address_addressLine2': None,
+            'address_city': "Cheltenham",
+            'address_administrativeRegion2': "Gloucestershire",
+            'address_administrativeRegion1': "England",
+            'address_country': "United Kingdom",
+            'address_postalCode': "GL51 0TF",
+            'customer_Id': "GB-38884-E10"}
+        ]
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
 if __name__ == '__main__':
     unittest.main()
