@@ -19,7 +19,7 @@ def discover(selected_datasources):
                 {'breadcrumb': (), 'metadata': {'selected': True}}
             ]
 
-        key_properties = []
+        key_properties = ['reference']
         streams.append(
             CatalogEntry(
                 tap_stream_id=stream_id,

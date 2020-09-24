@@ -1,5 +1,8 @@
 {
     "properties": {
+        "reference": {
+            "type": ["null", "string"]
+        },
         "assignedUserId": {
             "type": ["null", "string"]
         },
@@ -14,9 +17,6 @@
             "type": ["null", "string"]
         },
         "currentWorkflowStageType": {
-            "type": ["null", "string"]
-        },
-        "reference": {
             "type": ["null", "string"]
         },
         "tags": {

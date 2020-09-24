@@ -99,7 +99,9 @@ class TestSync(unittest.TestCase):
             'continuationToken': 'moredata',
             'rows': [{
                 "rowData": {
-                    "workItemId": "55a98839-c04f-4b95-b99c-b7e2537f8809"
+                    "workItemId": "55a98839-c04f-4b95-b99c-b7e2537f8809",
+                    "assignedUserId": "4f104c50-745b-4f47-86ef-826b300f5074",
+                    "assignedUserName": "Bill"
                 }
             }]
         }
@@ -117,7 +119,10 @@ class TestSync(unittest.TestCase):
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
 
         expected_records = [
-            {'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
+            {'id': "55a98839-c04f-4b95-b99c-b7e2537f8809",
+             'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
+             'assignedUserId': "4f104c50-745b-4f47-86ef-826b300f5074",
+             'assignedUserName': "Bill",
              'reference': "AP0002",
              'createdOn': "2020-05-14T14:14:14.455852+00:00",
              'lastModified': '2020-05-14T14:24:35.8273218+00:00',

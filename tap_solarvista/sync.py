@@ -29,10 +29,12 @@ def fetch_all_data(config, state, catalog):
                     continuation = response_data['continuationToken']
                 for row in response_data['rows']:
                     if stream.tap_stream_id == 'workitem_stream':
+                        item = row['rowData']
+                        merged = {}
+                        merged.update(item)
+                        merged.update(fetch_workitemdetail(config, item['workItemId']))
                         tap_data.append(
-                            flatten_json(
-                                fetch_workitemdetail(config, row['rowData']['workItemId'])
-                            )
+                            flatten_json(merged)
                         )
                     else:
                         tap_data.append(
