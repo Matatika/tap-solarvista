@@ -119,8 +119,7 @@ class TestSync(unittest.TestCase):
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
 
         expected_records = [
-            {'id': "55a98839-c04f-4b95-b99c-b7e2537f8809",
-             'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
+            {'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
              'assignedUserId': "4f104c50-745b-4f47-86ef-826b300f5074",
              'assignedUserName': "Bill",
              'reference': "AP0002",
