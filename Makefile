@@ -27,14 +27,13 @@ help:
 	@echo "       build sphinx documentation"
 
 prepare-dev:
-	# sudo apt-get -y install python3.5 python3-pip
-	python -m pip install virtualenv
+	# sudo apt-get -y install python3.5 python3-pip python3-venv
 	make venv
 
 # Requirements are in setup.py, so whenever setup.py is changed, re-run installation of dependencies.
 venv: $(VENV_NAME)/bin/activate
 $(VENV_NAME)/bin/activate: setup.py
-	test -d $(VENV_NAME) || virtualenv -p python3 $(VENV_NAME)
+	test -d $(VENV_NAME) || python3 -m venv $(VENV_NAME)
 	${PYTHON} -m pip install -U pip setuptools
 	${PYTHON} -m pip install sphinx
 	${PYTHON} -m pip install sphinx-rtd-theme
