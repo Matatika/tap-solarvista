@@ -52,17 +52,21 @@ def main():
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
 
-    # If discover flag was passed, run discovery mode and dump output to stdout
-    if args.discover:
-        selected_datasources = args.config.get('datasources')
+    selected_datasources = args.config.get('datasources')
+    if selected_datasources:
         data_catalog = catalog.discover(selected_datasources)
-        data_catalog.dump()
-    # Otherwise run in sync mode
     else:
         if args.catalog:
             data_catalog = args.catalog
         else:
             data_catalog = catalog.discover({})
+
+
+    # If discover flag was passed, run discovery mode and dump output to stdout
+    if args.discover:
+        data_catalog.dump()
+    # Otherwise run in sync mode
+    else:
         sync.fetch_all_data(args.config, args.state, data_catalog)
 
 
