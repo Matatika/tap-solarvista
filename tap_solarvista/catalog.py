@@ -20,6 +20,9 @@ def discover(selected_datasources):
             ]
 
         key_properties = ['reference']
+        if stream_id == 'users_stream':
+            key_properties = ['userId']
+
         streams.append(
             CatalogEntry(
                 tap_stream_id=stream_id,

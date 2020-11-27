@@ -42,5 +42,13 @@ class TestCatalog(unittest.TestCase):
         self.assertEqual(stream_aliases, ['work-item'],
                          "Expect stream alias to be datasource name")
 
+    def test_catalog_users_primary_key(self):
+        """ Test discover users with a primary key for 'userId' """
+        local_catalog = catalog.discover(['users'])
+        selected_streams = local_catalog.get_selected_streams({})
+
+        key_props = [s.key_properties[0] for s in selected_streams]
+        self.assertEqual(sorted(key_props), ['userId'])
+
 if __name__ == '__main__':
     unittest.main()

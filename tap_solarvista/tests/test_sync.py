@@ -88,6 +88,7 @@ class TestSync(unittest.TestCase):
 
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
+
     @patch('tap_solarvista.sync.fetch_workitemdetail')
     @patch('tap_solarvista.sync.fetch_data')
     def test_sync_workitem(self, mock_fetch_data, mock_fetch_workitemdetail):
