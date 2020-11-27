@@ -29,7 +29,7 @@ setup(
     [console_scripts]
     tap-solarvista=tap_solarvista:main
     """,
-    packages = find_packages(),
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_data = {
         "schemas": ["tap_solarvista/schemas/*.json"]
     },
