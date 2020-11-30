@@ -20,6 +20,24 @@
         },
         "status": {
             "type": ["string"]
+        },
+        "latitude": {
+            "type": ["null", "string"]        
+        },
+        "longitude": {
+            "type": ["null", "string"]        
+        },
+        "customer_id": {
+            "type": ["null", "string"]        
+        },
+        "time-zone_id": {
+            "type": ["null", "string"]        
+        },
+        "category_id": {
+            "type": ["null", "string"]        
+        },
+        "territory_id": {
+            "type": ["null", "string"]        
         }
     }
 }

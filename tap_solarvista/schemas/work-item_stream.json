@@ -13,14 +13,28 @@
              "type": ["string"],
              "format": "date-time"
         },
+        "lastModified": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "isComplete": {
+            "type": ["null", "boolean"]
+        },
+        "currentStage_stageType": {
+            "type": ["null", "string"]        
+        },
+        "currentStage_lastTransitionTime": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "currentStage_lastTransitionId": {
+            "type": ["null", "string"]        
+        },
         "currentWorkflowStageDisplayName": {
             "type": ["null", "string"]
         },
         "currentWorkflowStageType": {
             "type": ["null", "string"]
-        },
-        "tags": {
-            "type": ["null", "array"]
         },
         "workItemTemplateDisplayName": {
             "type": ["null", "string"]
@@ -30,6 +44,23 @@
         },
         "workItemId": {
             "type": ["null", "string"]
+        },
+        "tags": {
+            "type": ["null", "array"]
+        },
+        "appliedresponsesla": {
+            "type": ["null", "number"]
+        },
+        "model": {
+            "type": ["null", "string"]
+        },
+        "responseduedate": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "fixduedate": {
+             "type": ["string"],
+             "format": "date-time"
         },
         "properties_customer_id": {
             "type": ["null", "string"]        
