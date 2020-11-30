@@ -134,12 +134,71 @@ class TestSync(unittest.TestCase):
                 + "/datasources/ref/site/data/query",
             json=mock_site_data,
         )
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/site/data/query",
+            json=mock_site_data,
+        )
         tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
         self.assertEqual(len(SINGER_MESSAGES), 2)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
 
-    
+
+    @responses.activate  # intercept HTTP calls within this method
+    def test_sync_reuse_token(self):
+        """ Test sync requests refresh token """
+        mock_config = {
+            'account': 'mock-account-id'
+        }
+        mock_state = {}
+        responses.add(
+            responses.POST,
+            "https://auth.solarvista.com/connect/token",
+            json=MOCK_TOKEN,
+        )
+        mock_site_data = {
+            'continuationToken': None,
+            'rows': [{
+                "rowData": {
+                    "reference": "GB-83320-S7",
+                    "nickname": "Hamill-Lueilwitz/High Wycombe"
+                }
+            }]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/site/data/query",
+            json=mock_site_data,
+        )
+        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        self.assertEquals(len(responses.calls), 2)
+        self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
+        self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
+                + "/mock-account-id/datasources/ref/site/data/query", 1))
+        self.assertEqual(len(SINGER_MESSAGES), 2)
+
+        # a second call should reuse the access_token
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/site/data/query",
+            json=mock_site_data,
+        )
+        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        self.assertEquals(len(responses.calls), 3)
+        self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
+        self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
+                + "/mock-account-id/datasources/ref/site/data/query", 2))
+        self.assertEqual(len(SINGER_MESSAGES), 4)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
+
+
     @patch('tap_solarvista.sync.fetch_data')
     def test_sync_basic(self, mock_fetch):
         """ Test basic sync returns schema and records """

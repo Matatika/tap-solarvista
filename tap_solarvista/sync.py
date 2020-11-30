@@ -126,7 +126,9 @@ def get_access_token(config):
     if response is not None:
         if response.status_code == 200:
             response_data = response.json()
-            return response_data['access_token']
+            access_token = response_data['access_token']
+            config['personal_access_token'] = access_token
+            return access_token
     return None
 
 def flatten_json(unformated_json):
