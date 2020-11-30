@@ -22,6 +22,8 @@ setup(
     install_requires=[
         "singer-python>=5.0.12",
         "requests",
+        "responses",
+        "urllib3",
     ],
     tests_require=test_deps,
     extras_require=extras,

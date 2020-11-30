@@ -4,6 +4,7 @@ try:
     from unittest.mock import patch
 except ImportError:
     from mock import patch
+import responses
 import singer
 import tap_solarvista
 import tap_solarvista.tests.utils as test_utils
@@ -17,6 +18,13 @@ def accumulate_singer_messages(message):
     SINGER_MESSAGES.append(message)
 
 singer.messages.write_message = accumulate_singer_messages
+
+MOCK_TOKEN = {
+    "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij",
+    "expires_in": 3600,
+    "token_type": "Bearer",
+    "scope": "api email openid profile"
+}
 
 MOCK_WORKITEM_DETAIL = {
     "workItemId": "55a98839-c04f-4b95-b99c-b7e2537f8809",
@@ -55,6 +63,83 @@ class TestSync(unittest.TestCase):
         self.catalog = test_utils.discover_catalog('site')
         del SINGER_MESSAGES[:]  # prefer SINGER_MESSAGES.clear(), only available on python3
 
+    @responses.activate  # intercept HTTP calls within this method
+    def test_sync_token(self):
+        """ Test basic sync requests token before requesting records """
+        mock_config = {
+            'account': 'mock-account-id'
+        }
+        mock_state = {}
+        responses.add(
+            responses.POST,
+            "https://auth.solarvista.com/connect/token",
+            json=MOCK_TOKEN,
+        )
+        mock_site_data = {
+            'continuationToken': None,
+            'rows': [{
+                "rowData": {
+                    "reference": "GB-83320-S7",
+                    "nickname": "Hamill-Lueilwitz/High Wycombe"
+                }
+            }]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/site/data/query",
+            json=mock_site_data,
+        )
+        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+
+
+    @responses.activate  # intercept HTTP calls within this method
+    def test_sync_refresh_token(self):
+        """ Test sync requests refresh token """
+        mock_config = {
+            'account': 'mock-account-id'
+        }
+        mock_state = {}
+        responses.add(
+            responses.POST,
+            "https://auth.solarvista.com/connect/token",
+            json=MOCK_TOKEN,
+        )
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/site/data/query",
+            status=401
+        )
+        responses.add(
+            responses.POST,
+            "https://auth.solarvista.com/connect/token",
+            json=MOCK_TOKEN,
+        )
+        mock_site_data = {
+            'continuationToken': None,
+            'rows': [{
+                "rowData": {
+                    "reference": "GB-83320-S7",
+                    "nickname": "Hamill-Lueilwitz/High Wycombe"
+                }
+            }]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/site/data/query",
+            json=mock_site_data,
+        )
+        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+
+    
     @patch('tap_solarvista.sync.fetch_data')
     def test_sync_basic(self, mock_fetch):
         """ Test basic sync returns schema and records """

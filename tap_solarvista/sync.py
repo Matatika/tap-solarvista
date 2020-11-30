@@ -2,7 +2,9 @@
 #!/usr/bin/env python3
 import json
 import requests
+from urllib3.util import Retry
 import singer
+from tap_solarvista.timeout_http_adapter import TimeoutHttpAdapter
 
 LOGGER = singer.get_logger()
 
@@ -25,6 +27,7 @@ def fetch_all_data(config, state, catalog):
             continuation = None
             if response_data is not None:
                 if ('continuationToken' in response_data
+                        and response_data['continuationToken'] is not None
                         and len(response_data['continuationToken']) > 0):
                     continuation = response_data['continuationToken']
                 for row in response_data['rows']:
@@ -56,17 +59,7 @@ def fetch_data(config, stream, continue_from):
             body = json.dumps({
                 "continuationToken": continue_from
             })
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + config.get("personal_access_token")
-        }
-        LOGGER.info("POST %s", uri)
-        with requests.post(uri, data=body, headers=headers) as response:
-            if response.status_code == 200:
-                response_data = response.json()
-                return response_data
-            LOGGER.error("[%s] POST %s", str(response.status_code), uri)
+        return fetch(config, "POST", uri, body)
     return None
 
 def fetch_workitemdetail(config, workitem_id):
@@ -74,17 +67,66 @@ def fetch_workitemdetail(config, workitem_id):
     if workitem_id is not None:
         uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s" \
             % (config.get('account'), workitem_id)
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + config.get("personal_access_token")
-        }
+        return fetch(config, "GET", uri, None)
+    return None
+
+def fetch(config, method, uri, body):
+    """ Fetch from Solarvista API """
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + get_access_token(config)
+    }
+    response = _fetch(config, method, headers, uri, body, 1)
+    if response is not None:
+        if response.status_code == 200:
+            response_data = response.json()
+            return response_data
+    return None
+
+#pylint: disable=too-many-arguments
+def _fetch(config, method, headers, uri, body, refresh_auth):
+    """ Internal fetch to allow access token to be refreshed """
+    retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+    http = requests.Session()
+    http.mount("https://", TimeoutHttpAdapter(max_retries=retries))
+    response = None
+    if method == "GET":
         LOGGER.info("GET %s", uri)
-        with requests.get(uri, headers=headers) as response:
-            if response.status_code == 200:
-                response_data = response.json()
-                return response_data
-            LOGGER.error("[%s] GET %s", str(response.status_code), uri)
+        with requests.get(uri, headers=headers) as res:
+            LOGGER.info("[%s] GET %s", str(res.status_code), uri)
+            response = res
+    elif method == "POST":
+        LOGGER.info("POST %s", uri)
+        with requests.post(uri,
+                           data=body,
+                           headers=headers) as res:
+            LOGGER.info("[%s] POST %s", str(res.status_code), uri)
+            response = res
+    if response is not None and refresh_auth and response.status_code == 401:
+        LOGGER.error("[%s] token expired %s", str(response.status_code), uri)
+        config.pop('personal_access_token', None)
+        headers['Authorization'] = "Bearer " + get_access_token(config)
+        response = _fetch(config, method, headers, uri, body, 0)
+    return response
+
+
+def get_access_token(config):
+    """ Fetch access token from Solarvista API """
+    if config.get("personal_access_token") is not None:
+        return config.get("personal_access_token")
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    body = "client_id=pat&grant_type=password&username=%s&password=%s" \
+        % (config.get('clientId'), config.get('code'))
+    response = _fetch(config, "POST", headers, "https://auth.solarvista.com/connect/token", body, 0)
+    response.raise_for_status()
+    if response is not None:
+        if response.status_code == 200:
+            response_data = response.json()
+            return response_data['access_token']
     return None
 
 def flatten_json(unformated_json):

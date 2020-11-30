@@ -8,7 +8,7 @@ from singer import utils
 import tap_solarvista.catalog as catalog
 import tap_solarvista.sync as sync
 
-REQUIRED_CONFIG_KEYS = ["start_date", "personal_access_token", "account"]
+REQUIRED_CONFIG_KEYS = ["start_date", "clientId", "code", "account"]
 LOGGER = singer.get_logger()
 
 @utils.handle_top_exception(LOGGER)
