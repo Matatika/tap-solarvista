@@ -48,17 +48,17 @@
         "tags": {
             "type": ["null", "array"]
         },
-        "appliedresponsesla": {
+        "properties_appliedresponsesla": {
             "type": ["null", "number"]
         },
-        "model": {
+        "properties_model": {
             "type": ["null", "string"]
         },
-        "responseduedate": {
+        "properties_responseduedate": {
              "type": ["string"],
              "format": "date-time"
         },
-        "fixduedate": {
+        "properties_fixduedate": {
              "type": ["string"],
              "format": "date-time"
         },
