@@ -42,6 +42,21 @@ class TestCatalog(unittest.TestCase):
         self.assertEqual(stream_aliases, ['work-item'],
                          "Expect stream alias to be datasource name")
 
+    def test_catalog_workitem_breadcrumb(self):
+        """ Test discover work-item configures 'lastModified' breadcrumb """
+        local_catalog = catalog.discover(['work-item'])
+
+        selected_streams = local_catalog.get_selected_streams({})
+        stream_repl_keys = [s.replication_key for s in selected_streams]
+        self.assertEqual(sorted(stream_repl_keys), ['lastModified'],
+                         "Expect replication key for work-item")
+
+        selected_streams = local_catalog.get_selected_streams({})
+        stream_repl_methods = [s.replication_method for s in selected_streams]
+        self.assertEqual(sorted(stream_repl_methods), ['INCREMENTAL'],
+                         "Expect INCREMENTAL replication method for work-item")
+
+
     def test_catalog_users_primary_key(self):
         """ Test discover users with a primary key for 'userId' """
         local_catalog = catalog.discover(['users'])

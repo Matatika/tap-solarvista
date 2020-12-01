@@ -38,7 +38,7 @@ def sync_all_data(config, state, catalog):
             tap_data = []
             if (stream.tap_stream_id == 'workitem_stream'
                     and CONFIG.get('workitem_search_enabled') is not None):
-                response_data = sync_workitems_by_filter(stream.replication_key, continuation)
+                response_data = sync_workitems_by_filter(stream, stream.replication_key, continuation)
             else:
                 response_data = sync_datasource(stream, continuation)
             continuation = None
@@ -68,9 +68,9 @@ def sync_all_data(config, state, catalog):
                 break
 
 
-def sync_workitems_by_filter(bookmark_property, continue_from, predefined_filter=None):
+def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefined_filter=None):
     """ Sync work-item data from tap source with continuation """
-    state_entity = "workItems"
+    state_entity = stream.tap_stream_id
     if predefined_filter:
         state_entity = state_entity + "_" + predefined_filter
     start = get_start(state_entity)
@@ -90,8 +90,8 @@ def sync_workitems_by_filter(bookmark_property, continue_from, predefined_filter
     if predefined_filter:
         LOGGER.info("Syncing work-items with filter %s", predefined_filter)
         query['filterGroups'] = [{ 'filters': predefined_filter }]
-    uri = "https://api.solarvista.com/workflow/v4/%s/%s/search" \
-        % (CONFIG.get('account'), state_entity)
+    uri = "https://api.solarvista.com/workflow/v4/%s/workItems/search" \
+        % (CONFIG.get('account'))
     body = json.dumps(query)
     response_data = fetch("POST", uri, body)
     return transform_search_to_look_like_rowdata(response_data)

@@ -14,11 +14,17 @@ def discover(selected_datasources):
         # stream id becomes the table name, strip invalid characters for downstream targets
         stream_id = stream_id.replace('-', '')
         stream_name = datasource.replace('-', '')
+        stream_replication_key = None
+        stream_replication_method = None
+        if stream_id == 'workitem_stream':
+            stream_replication_key = "lastModified"
+            stream_replication_method = "INCREMENTAL"
+
         if selected_datasources and datasource in selected_datasources:
             stream_metadata = [
                 {'breadcrumb': (), 'metadata': {'selected': True}}
             ]
-
+            
         key_properties = ['reference']
         if stream_id == 'users_stream':
             key_properties = ['userId']
@@ -30,13 +36,13 @@ def discover(selected_datasources):
                 schema=schema,
                 key_properties=key_properties,
                 metadata=stream_metadata,
-                replication_key=None,
+                replication_key=stream_replication_key,
                 is_view=None,
                 database=None,
                 table=None,
                 row_count=None,
                 stream_alias=datasource,
-                replication_method=None,
+                replication_method=stream_replication_method,
             )
         )
     return Catalog(streams)

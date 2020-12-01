@@ -261,9 +261,10 @@ class TestSync(unittest.TestCase):
 
         tap_solarvista.sync.sync_all_data({}, state, self.catalog)
 
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
@@ -330,7 +331,7 @@ class TestSync(unittest.TestCase):
                 "assignedUserName": "Bill",
                 "reference": "AP0002",
                 "createdOn": "2020-05-14T14:14:14.455852+00:00",
-                "lastModified": "2020-05-14T14:24:35.8273218+00:00",
+                "lastModified": "mock-last-modified-state",
                 "currentStage": {
                     "stageType": "Working",
                 },
@@ -364,9 +365,17 @@ class TestSync(unittest.TestCase):
 
         tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
 
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(responses.calls), 1, "Expecting 1 call to search")
+        self.assertEqual(responses.calls[0].request.url,
+                         "https://api.solarvista.com/workflow/v4/mock-account-id/workItems/search")
+        self.assertEqual(responses.calls[0].request.body,
+                         "{\"lastModifiedAfter\": \"2020-05-14T14:14:14.455852+00:00\", " +
+                            "\"orderBy\": \"lastModified\", \"orderByDirection\": \"descending\"}")
+
+        self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
@@ -377,7 +386,7 @@ class TestSync(unittest.TestCase):
              'assignedUserName': "Bill",
              'reference': "AP0002",
              'createdOn': "2020-05-14T14:14:14.455852+00:00",
-             'lastModified': '2020-05-14T14:24:35.8273218+00:00',
+             'lastModified': 'mock-last-modified-state',
              'currentStage_stageType': 'Working',
              'description': "Aaron test repair",
              'isComplete': False,
@@ -390,6 +399,13 @@ class TestSync(unittest.TestCase):
              'properties_duration-hours': 3}
         ]
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
+        state_messages = list(filter(
+            lambda m: isinstance(m, singer.StateMessage), SINGER_MESSAGES))
+        expected_states = [
+            {'workitem_stream': 'mock-last-modified-state'}
+        ]
+        self.assertEqual(expected_states, [x.asdict()['value'] for x in state_messages])
 
 
     @patch('tap_solarvista.sync.sync_datasource')
