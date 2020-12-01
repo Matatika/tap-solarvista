@@ -67,7 +67,7 @@ def main():
         data_catalog.dump()
     # Otherwise run in sync mode
     else:
-        sync.fetch_all_data(args.config, args.state, data_catalog)
+        sync.sync_all_data(args.config, args.state, data_catalog)
 
 
 if __name__ == "__main__":

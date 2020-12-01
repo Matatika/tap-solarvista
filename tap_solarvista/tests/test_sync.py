@@ -90,7 +90,7 @@ class TestSync(unittest.TestCase):
                 + "/datasources/ref/site/data/query",
             json=mock_site_data,
         )
-        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
         self.assertEqual(len(SINGER_MESSAGES), 2)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
@@ -140,7 +140,7 @@ class TestSync(unittest.TestCase):
                 + "/datasources/ref/site/data/query",
             json=mock_site_data,
         )
-        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
         self.assertEqual(len(SINGER_MESSAGES), 2)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
@@ -173,7 +173,8 @@ class TestSync(unittest.TestCase):
                 + "/datasources/ref/site/data/query",
             json=mock_site_data,
         )
-        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        tap_solarvista.sync.CONFIG.clear()
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
         self.assertEqual(len(responses.calls), 2)
         self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
         self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
@@ -187,7 +188,7 @@ class TestSync(unittest.TestCase):
                 + "/datasources/ref/site/data/query",
             json=mock_site_data,
         )
-        tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
         self.assertEqual(len(responses.calls), 3)
         self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
         self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
@@ -199,7 +200,7 @@ class TestSync(unittest.TestCase):
         self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
 
 
-    @patch('tap_solarvista.sync.fetch_data')
+    @patch('tap_solarvista.sync.sync_datasource')
     def test_sync_basic(self, mock_fetch):
         """ Test basic sync returns schema and records """
         state = {}
@@ -216,7 +217,7 @@ class TestSync(unittest.TestCase):
 
         mock_fetch.side_effect = [site_data, None]
 
-        tap_solarvista.sync.fetch_all_data({}, state, self.catalog)
+        tap_solarvista.sync.sync_all_data({}, state, self.catalog)
 
         self.assertEqual(len(SINGER_MESSAGES), 2)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
@@ -234,7 +235,7 @@ class TestSync(unittest.TestCase):
 
 
     @patch('tap_solarvista.sync.fetch_workitemdetail')
-    @patch('tap_solarvista.sync.fetch_data')
+    @patch('tap_solarvista.sync.sync_datasource')
     def test_sync_workitem(self, mock_fetch_data, mock_fetch_workitemdetail):
         """ Test workitem sync returns schema and full work-item detail records """
         self.catalog = test_utils.discover_catalog('workitem')
@@ -258,7 +259,7 @@ class TestSync(unittest.TestCase):
         mock_fetch_data.side_effect = [workitem_data, None]
         mock_fetch_workitemdetail.side_effect = [MOCK_WORKITEM_DETAIL, None]
 
-        tap_solarvista.sync.fetch_all_data({}, state, self.catalog)
+        tap_solarvista.sync.sync_all_data({}, state, self.catalog)
 
         self.assertEqual(len(SINGER_MESSAGES), 2)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
@@ -310,7 +311,88 @@ class TestSync(unittest.TestCase):
         }
         self.assertEqual(expected, result)
 
-    @patch('tap_solarvista.sync.fetch_data')
+
+    @responses.activate  # intercept HTTP calls within this method
+    def test_sync_workitem_incremental(self):
+        """ Test incremental workitem sync returns schema and full work-item detail records """
+        self.catalog = test_utils.discover_catalog('workitem')
+        mock_config = {
+            'workitem_search_enabled': True,
+            'start_date': "2020-05-14T14:14:14.455852+00:00"
+        }
+        mock_state = {}
+
+        mock_workitem_data = {
+            'continuationToken': None,
+            'items': [{
+                "workItemId": "55a98839-c04f-4b95-b99c-b7e2537f8809",
+                "assignedUserId": "4f104c50-745b-4f47-86ef-826b300f5074",
+                "assignedUserName": "Bill",
+                "reference": "AP0002",
+                "createdOn": "2020-05-14T14:14:14.455852+00:00",
+                "lastModified": "2020-05-14T14:24:35.8273218+00:00",
+                "currentStage": {
+                    "stageType": "Working",
+                },
+                "description": "Aaron test repair",
+                "isComplete": False,
+                "fieldValues": {
+                    "site": {
+                        "id": "GB-54778-S7",
+                    },
+                    "customer": {
+                        "id": "GB-4998-E5",
+                    },
+                    "equipment": {
+                        "id": "GB1261",
+                    },
+                    "charge": 233,
+                    "currency": {
+                        "id": "GBP",
+                    },
+                    "price-inc-tax": False,
+                    "duration-hours": 3,
+                },
+            }]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/workflow/v4/mock-account-id"
+                + "/workItems/search",
+            json=mock_workitem_data,
+        )
+
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
+
+        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [
+            {'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
+             'assignedUserId': "4f104c50-745b-4f47-86ef-826b300f5074",
+             'assignedUserName': "Bill",
+             'reference': "AP0002",
+             'createdOn': "2020-05-14T14:14:14.455852+00:00",
+             'lastModified': '2020-05-14T14:24:35.8273218+00:00',
+             'currentStage_stageType': 'Working',
+             'description': "Aaron test repair",
+             'isComplete': False,
+             'properties_customer_id': "GB-4998-E5",
+             'properties_site_id': "GB-54778-S7",
+             'properties_equipment_id': "GB1261",
+             'properties_charge': 233,
+             'properties_currency_id': 'GBP',
+             'properties_price-inc-tax': False,
+             'properties_duration-hours': 3}
+        ]
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
+
+    @patch('tap_solarvista.sync.sync_datasource')
     def test_sync_site(self, mock_fetch_data):
         """ Test site sync returns all record elements """
         self.catalog = test_utils.discover_catalog('site')
@@ -343,7 +425,7 @@ class TestSync(unittest.TestCase):
 
         mock_fetch_data.side_effect = [site_data, None]
 
-        tap_solarvista.sync.fetch_all_data({}, state, self.catalog)
+        tap_solarvista.sync.sync_all_data({}, state, self.catalog)
 
         self.assertEqual(len(SINGER_MESSAGES), 2)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)

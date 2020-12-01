@@ -7,9 +7,22 @@ import singer
 from tap_solarvista.timeout_http_adapter import TimeoutHttpAdapter
 
 LOGGER = singer.get_logger()
+CONFIG = {}
+STATE = {}
 
-def fetch_all_data(config, state, catalog):
+def get_start(entity):
+    """ Get the start point for incremental sync """
+    if entity not in STATE:
+        STATE[entity] = CONFIG['start_date']
+
+    return STATE[entity]
+
+
+def sync_all_data(config, state, catalog):
     """ Sync data from tap source """
+    CONFIG.update(config)
+    STATE.update(state)
+
     # Loop over selected streams in catalog
     for stream in catalog.get_selected_streams(state):
         LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
@@ -23,7 +36,11 @@ def fetch_all_data(config, state, catalog):
         continuation = None
         while True:
             tap_data = []
-            response_data = fetch_data(config, stream, continuation)
+            if (stream.tap_stream_id == 'workitem_stream'
+                    and CONFIG.get('workitem_search_enabled') is not None):
+                response_data = sync_workitems_by_filter(stream.replication_key, continuation)
+            else:
+                response_data = sync_datasource(stream, continuation)
             continuation = None
             if response_data is not None:
                 if ('continuationToken' in response_data
@@ -31,11 +48,12 @@ def fetch_all_data(config, state, catalog):
                         and len(response_data['continuationToken']) > 0):
                     continuation = response_data['continuationToken']
                 for row in response_data['rows']:
-                    if stream.tap_stream_id == 'workitem_stream':
+                    if (stream.tap_stream_id == 'workitem_stream'
+                            and CONFIG.get('workitem_search_enabled') is None):
                         item = row['rowData']
                         merged = {}
                         merged.update(item)
-                        merged.update(fetch_workitemdetail(config, item['workItemId']))
+                        merged.update(fetch_workitemdetail(item['workItemId']))
                         tap_data.append(
                             flatten_json(merged)
                         )
@@ -49,43 +67,84 @@ def fetch_all_data(config, state, catalog):
             if continuation is None:
                 break
 
-def fetch_data(config, stream, continue_from):
+
+def sync_workitems_by_filter(bookmark_property, continue_from, predefined_filter=None):
+    """ Sync work-item data from tap source with continuation """
+    state_entity = "workItems"
+    if predefined_filter:
+        state_entity = state_entity + "_" + predefined_filter
+    start = get_start(state_entity)
+    query = {
+      'lastModifiedAfter': start,
+      'orderBy': bookmark_property,
+      'orderByDirection': "descending"
+    }
+    if continue_from is not None:
+        query['continuationToken'] = continue_from
+    ## add tests and full support for predefined_filter, e.g. isCompleted
+    #{
+    #    'comparison': "equals",
+    #    'fieldName': "isCompleted",
+    #    'value': True
+    #}
+    if predefined_filter:
+        LOGGER.info("Syncing work-items with filter %s", predefined_filter)
+        query['filterGroups'] = [{ 'filters': predefined_filter }]
+    uri = "https://api.solarvista.com/workflow/v4/%s/%s/search" \
+        % (CONFIG.get('account'), state_entity)
+    body = json.dumps(query)
+    response_data = fetch("POST", uri, body)
+    return transform_search_to_look_like_rowdata(response_data)
+
+
+def transform_search_to_look_like_rowdata(response_data):
+    new_data = {}
+    new_data['continuationToken'] = response_data['continuationToken']
+    if response_data['items']:
+        rows = []
+        for item in response_data['items']:
+            item["properties"] = item.pop("fieldValues")
+            rows.append({ "rowData": item})
+        new_data['rows'] = rows
+    return new_data
+    
+
+def sync_datasource(stream, continue_from):
     """ Sync data from tap source with continuation """
     if stream.stream_alias is not None:
         body = None
         uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" \
-            % (config.get('account'), stream.stream_alias)
+            % (CONFIG.get('account'), stream.stream_alias)
         if continue_from is not None:
             body = json.dumps({
                 "continuationToken": continue_from
             })
-        return fetch(config, "POST", uri, body)
+        return fetch("POST", uri, body)
     return None
 
-def fetch_workitemdetail(config, workitem_id):
+def fetch_workitemdetail(workitem_id):
     """ Fetch workitem detail """
     if workitem_id is not None:
         uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s" \
-            % (config.get('account'), workitem_id)
-        return fetch(config, "GET", uri, None)
+            % (CONFIG.get('account'), workitem_id)
+        return fetch("GET", uri, None)
     return None
 
-def fetch(config, method, uri, body):
+def fetch(method, uri, body):
     """ Fetch from Solarvista API """
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + get_access_token(config)
+        "Authorization": "Bearer " + get_access_token()
     }
-    response = _fetch(config, method, headers, uri, body, 1)
+    response = _fetch(method, headers, uri, body, 1)
     if response is not None:
         if response.status_code == 200:
             response_data = response.json()
             return response_data
     return None
 
-#pylint: disable=too-many-arguments
-def _fetch(config, method, headers, uri, body, refresh_auth):
+def _fetch(method, headers, uri, body, refresh_auth):
     """ Internal fetch to allow access token to be refreshed """
     retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
     http = requests.Session()
@@ -105,29 +164,29 @@ def _fetch(config, method, headers, uri, body, refresh_auth):
             response = res
     if response is not None and refresh_auth and response.status_code == 401:
         LOGGER.error("[%s] token expired %s", str(response.status_code), uri)
-        config.pop('personal_access_token', None)
-        headers['Authorization'] = "Bearer " + get_access_token(config)
-        response = _fetch(config, method, headers, uri, body, 0)
+        CONFIG.pop('personal_access_token', None)
+        headers['Authorization'] = "Bearer " + get_access_token()
+        response = _fetch(method, headers, uri, body, 0)
     return response
 
 
-def get_access_token(config):
+def get_access_token():
     """ Fetch access token from Solarvista API """
-    if config.get("personal_access_token") is not None:
-        return config.get("personal_access_token")
+    if CONFIG.get("personal_access_token") is not None:
+        return CONFIG.get("personal_access_token")
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded"
     }
     body = "client_id=pat&grant_type=password&username=%s&password=%s" \
-        % (config.get('clientId'), config.get('code'))
-    response = _fetch(config, "POST", headers, "https://auth.solarvista.com/connect/token", body, 0)
+        % (CONFIG.get('clientId'), CONFIG.get('code'))
+    response = _fetch("POST", headers, "https://auth.solarvista.com/connect/token", body, 0)
     response.raise_for_status()
     if response is not None:
         if response.status_code == 200:
             response_data = response.json()
             access_token = response_data['access_token']
-            config['personal_access_token'] = access_token
+            CONFIG['personal_access_token'] = access_token
             return access_token
     return None
 

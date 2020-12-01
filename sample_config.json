@@ -2,6 +2,9 @@
   "__comment__": "Specifying datasources here will overwrite stream metadata to select streams during --discover",
   "datasources": ["customer", "equipment", "site", "work-item"],
   
+  "__comment__": "Enabling workitem_search has the effect of searching for workitems keeping a lastModified state",
+  "workitem_search_enabled": "true",
+  
   "account": "[put your accountId here]",
   "clientId": "[put your OAuth clientId here]",
   "code": "[put your OAuth code here]",
