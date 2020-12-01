@@ -34,38 +34,39 @@ def sync_all_data(config, state, catalog):
         )
 
         continuation = None
-        while True:
-            tap_data = []
-            if (stream.tap_stream_id == 'workitem_stream'
-                    and CONFIG.get('workitem_detail_enabled') is None):
-                response_data = sync_workitems_by_filter(stream, stream.replication_key, continuation)
-            else:
-                response_data = sync_datasource(stream, continuation)
-            continuation = None
-            if response_data is not None:
-                if ('continuationToken' in response_data
-                        and response_data['continuationToken'] is not None
-                        and len(response_data['continuationToken']) > 0):
-                    continuation = response_data['continuationToken']
-                for row in response_data['rows']:
-                    if (stream.tap_stream_id == 'workitem_stream'
-                            and CONFIG.get('workitem_detail_enabled') is not None):
-                        item = row['rowData']
-                        merged = {}
-                        merged.update(item)
-                        merged.update(fetch_workitemdetail(item['workItemId']))
-                        tap_data.append(
-                            flatten_json(merged)
-                        )
-                    else:
-                        tap_data.append(
-                            flatten_json(row['rowData'])
-                        )
-
-            write_data(stream, tap_data)
-
-            if continuation is None:
-                break
+        with singer.metrics.record_counter(stream.tap_stream_id) as counter:
+            while True:
+                tap_data = []
+                if (stream.tap_stream_id == 'workitem_stream'
+                        and CONFIG.get('workitem_detail_enabled') is None):
+                    response_data = sync_workitems_by_filter(stream, stream.replication_key, continuation)
+                else:
+                    response_data = sync_datasource(stream, continuation)
+                continuation = None
+                if response_data is not None:
+                    if ('continuationToken' in response_data
+                            and response_data['continuationToken'] is not None
+                            and len(response_data['continuationToken']) > 0):
+                        continuation = response_data['continuationToken']
+                    for row in response_data['rows']:
+                        if (stream.tap_stream_id == 'workitem_stream'
+                                and CONFIG.get('workitem_detail_enabled') is not None):
+                            item = row['rowData']
+                            merged = {}
+                            merged.update(item)
+                            merged.update(fetch_workitemdetail(item['workItemId']))
+                            tap_data.append(
+                                flatten_json(merged)
+                            )
+                        else:
+                            tap_data.append(
+                                flatten_json(row['rowData'])
+                            )
+    
+                write_data(stream, tap_data)
+                counter.increment()
+                if continuation is None:
+                    break
 
 
 def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefined_filter=None):
