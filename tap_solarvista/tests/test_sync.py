@@ -174,7 +174,7 @@ class TestSync(unittest.TestCase):
             json=mock_site_data,
         )
         tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
-        self.assertEquals(len(responses.calls), 2)
+        self.assertEqual(len(responses.calls), 2)
         self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
         self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
                 + "/mock-account-id/datasources/ref/site/data/query", 1))
@@ -188,7 +188,7 @@ class TestSync(unittest.TestCase):
             json=mock_site_data,
         )
         tap_solarvista.sync.fetch_all_data(mock_config, mock_state, self.catalog)
-        self.assertEquals(len(responses.calls), 3)
+        self.assertEqual(len(responses.calls), 3)
         self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
         self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
                 + "/mock-account-id/datasources/ref/site/data/query", 2))
