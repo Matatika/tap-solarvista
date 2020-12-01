@@ -24,7 +24,7 @@ def discover(selected_datasources):
             stream_metadata = [
                 {'breadcrumb': (), 'metadata': {'selected': True}}
             ]
-            
+
         key_properties = ['reference']
         if stream_id == 'users_stream':
             key_properties = ['userId']

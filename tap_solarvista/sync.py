@@ -39,7 +39,8 @@ def sync_all_data(config, state, catalog):
                 tap_data = []
                 if (stream.tap_stream_id == 'workitem_stream'
                         and CONFIG.get('workitem_detail_enabled') is None):
-                    response_data = sync_workitems_by_filter(stream, stream.replication_key, continuation)
+                    response_data = sync_workitems_by_filter(stream,
+                                            stream.replication_key, continuation)
                 else:
                     response_data = sync_datasource(stream, continuation)
                 continuation = None
@@ -49,12 +50,13 @@ def sync_all_data(config, state, catalog):
                             and len(response_data['continuationToken']) > 0):
                         continuation = response_data['continuationToken']
                     for row in response_data['rows']:
-                        if (stream.tap_stream_id == 'workitem_stream'
-                                and CONFIG.get('workitem_detail_enabled') is not None):
+                        if stream.tap_stream_id == 'workitem_stream':
                             item = row['rowData']
                             merged = {}
                             merged.update(item)
-                            merged.update(fetch_workitemdetail(item['workItemId']))
+                            if CONFIG.get('workitem_detail_enabled') is not None:
+                                merged.update(fetch_workitemdetail(item['workItemId']))
+                            #merged.update(fetch_workitemhistory(item['workItemId']))
                             tap_data.append(
                                 flatten_json(merged)
                             )
@@ -62,7 +64,7 @@ def sync_all_data(config, state, catalog):
                             tap_data.append(
                                 flatten_json(row['rowData'])
                             )
-    
+
                 write_data(stream, tap_data)
                 counter.increment()
                 if continuation is None:
@@ -99,6 +101,7 @@ def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefine
 
 
 def transform_search_to_look_like_rowdata(response_data):
+    """ transform the search results, so we can reuse the sync loop """
     if response_data is None:
         return None
     new_data = {}
@@ -111,7 +114,7 @@ def transform_search_to_look_like_rowdata(response_data):
             rows.append({ "rowData": item})
         new_data['rows'] = rows
     return new_data
-    
+
 
 def sync_datasource(stream, continue_from):
     """ Sync data from tap source with continuation """
