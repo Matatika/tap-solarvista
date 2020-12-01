@@ -58,11 +58,11 @@
             "type": ["null", "string"]
         },
         "properties_responseduedate": {
-             "type": ["string"],
+             "type": ["null", "string"],
              "format": "date-time"
         },
         "properties_fixduedate": {
-             "type": ["string"],
+             "type": ["null", "string"],
              "format": "date-time"
         },
         "properties_customer_id": {
