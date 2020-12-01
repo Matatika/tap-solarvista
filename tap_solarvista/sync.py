@@ -98,8 +98,11 @@ def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefine
 
 
 def transform_search_to_look_like_rowdata(response_data):
+    if response_data is None:
+        return None
     new_data = {}
-    new_data['continuationToken'] = response_data['continuationToken']
+    if response_data.get('continuationToken'):
+        new_data['continuationToken'] = response_data['continuationToken']
     if response_data['items']:
         rows = []
         for item in response_data['items']:

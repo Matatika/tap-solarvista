@@ -327,7 +327,6 @@ class TestSync(unittest.TestCase):
         mock_state = {}
 
         mock_workitem_data = {
-            'continuationToken': None,
             'items': [{
                 "workItemId": "55a98839-c04f-4b95-b99c-b7e2537f8809",
                 "assignedUserId": "4f104c50-745b-4f47-86ef-826b300f5074",
