@@ -239,6 +239,9 @@ class TestSync(unittest.TestCase):
     def test_sync_workitem(self, mock_fetch_data, mock_fetch_workitemdetail):
         """ Test workitem sync returns schema and full work-item detail records """
         self.catalog = test_utils.discover_catalog('workitem')
+        mock_config = {
+            'workitem_detail_enabled': True
+        }
         state = {}
 
         workitem_data = {
@@ -259,7 +262,7 @@ class TestSync(unittest.TestCase):
         mock_fetch_data.side_effect = [workitem_data, None]
         mock_fetch_workitemdetail.side_effect = [MOCK_WORKITEM_DETAIL, None]
 
-        tap_solarvista.sync.sync_all_data({}, state, self.catalog)
+        tap_solarvista.sync.sync_all_data(mock_config, state, self.catalog)
 
         self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
@@ -318,7 +321,7 @@ class TestSync(unittest.TestCase):
         """ Test incremental workitem sync returns schema and full work-item detail records """
         self.catalog = test_utils.discover_catalog('workitem')
         mock_config = {
-            'workitem_search_enabled': True,
+            'workitem_detail_enabled': None,
             'start_date': "2020-05-14T14:14:14.455852+00:00"
         }
         mock_state = {}

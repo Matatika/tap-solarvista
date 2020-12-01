@@ -37,7 +37,7 @@ def sync_all_data(config, state, catalog):
         while True:
             tap_data = []
             if (stream.tap_stream_id == 'workitem_stream'
-                    and CONFIG.get('workitem_search_enabled') is not None):
+                    and CONFIG.get('workitem_detail_enabled') is None):
                 response_data = sync_workitems_by_filter(stream, stream.replication_key, continuation)
             else:
                 response_data = sync_datasource(stream, continuation)
@@ -49,7 +49,7 @@ def sync_all_data(config, state, catalog):
                     continuation = response_data['continuationToken']
                 for row in response_data['rows']:
                     if (stream.tap_stream_id == 'workitem_stream'
-                            and CONFIG.get('workitem_search_enabled') is None):
+                            and CONFIG.get('workitem_detail_enabled') is not None):
                         item = row['rowData']
                         merged = {}
                         merged.update(item)
