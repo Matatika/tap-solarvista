@@ -246,7 +246,11 @@ class TestSync(unittest.TestCase):
                 "rowData": {
                     "workItemId": "55a98839-c04f-4b95-b99c-b7e2537f8809",
                     "assignedUserId": "4f104c50-745b-4f47-86ef-826b300f5074",
-                    "assignedUserName": "Bill"
+                    "assignedUserName": "Bill",
+                    "tags": [
+                        "Revisit",
+                        "Awaiting Parts"
+                    ],
                 }
             }]
         }
@@ -267,6 +271,7 @@ class TestSync(unittest.TestCase):
             {'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
              'assignedUserId': "4f104c50-745b-4f47-86ef-826b300f5074",
              'assignedUserName': "Bill",
+             'tags': ['Revisit', 'Awaiting Parts'],
              'reference': "AP0002",
              'createdOn': "2020-05-14T14:14:14.455852+00:00",
              'lastModified': '2020-05-14T14:24:35.8273218+00:00',

@@ -139,11 +139,6 @@ def flatten_json(unformated_json):
         if isinstance(json_structure, dict):
             for element in json_structure:
                 flatten(json_structure[element], name + element + '_')
-        elif isinstance(json_structure, list):
-            i = 0
-            for element in json_structure:
-                flatten(element, name + str(i) + '_')
-                i += 1
         else:
             out[name[:-1]] = json_structure
 
