@@ -1,15 +1,21 @@
 {
     "properties": {
+        "workItemHistoryId": {
+            "type": ["null", "string"]
+        },
         "workItemId": {
             "type": ["null", "string"]
         },
         "workflowId": {
             "type": ["null", "string"]
         },
-        "stage_assignedUser_userId": {
+        "stage_assignedUser_displayName": {
             "type": ["null", "string"]
         },
-        "stage_assignedUser_displayName": {
+        "stage_assignedUser_email": {
+            "type": ["null", "string"]
+        },
+        "stage_assignedUser_userId": {
             "type": ["null", "string"]
         },
         "stage_stageDisplayName": {

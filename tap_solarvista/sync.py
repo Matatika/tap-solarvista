@@ -98,6 +98,7 @@ def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefine
     if predefined_filter:
         LOGGER.info("Syncing work-items with filter %s", predefined_filter)
         query['filterGroups'] = [{ 'filters': predefined_filter }]
+    LOGGER.info("Syncing work-items since %s", start)
     uri = "https://api.solarvista.com/workflow/v4/%s/workItems/search" \
         % (CONFIG.get('account'))
     body = json.dumps(query)
@@ -139,13 +140,13 @@ def sync_workitemhistory(catalog, workitem_id):
     if workitem_id is not None:
         workitem_history_stream = catalog.get_stream('workitemhistory_stream')
         if workitem_history_stream and workitem_history_stream.is_selected():
-            uri = "https://api.solarvista.com/workflow/v4/%s/workItems/%s/history" \
+            uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s/history" \
                 % (CONFIG.get('account'), workitem_id)
             history_rows = transform_workitemhistory_to_rowdata(fetch("GET", uri, None))
             if history_rows.get('rows'):
                 tap_data = []
                 for history_row in history_rows['rows']:
-                    tap_data.append(flatten_json(history_row['rowData']))
+                    tap_data.append(history_row['rowData'])
                 write_data(workitem_history_stream, tap_data)
 
 def fetch_workitemdetail(workitem_id):
@@ -174,7 +175,9 @@ def transform_workitemhistory_to_rowdata(response_data):
                 row_data = {}
                 row_data['workItemHistoryId'] = workitem_data['workItemId'] + "_" + str(i)
                 row_data.update(workitem_data)
-                row_data['stage'] = stage
+                stage_data= {}
+                stage_data['stage'] = stage
+                row_data.update(flatten_json(stage_data))
                 rows.append({ "rowData": row_data})
             new_data['rows'] = rows
     return new_data

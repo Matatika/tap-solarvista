@@ -471,7 +471,7 @@ class TestSync(unittest.TestCase):
         responses.add(
             responses.GET,
             "https://api.solarvista.com/workflow/v4/mock-account-id"
-                + "/workItems/mock-workitem-id/history",
+                + "/workItems/id/mock-workitem-id/history",
             json=mock_workitem_history_data,
         )
 
