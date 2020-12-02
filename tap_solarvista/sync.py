@@ -18,6 +18,7 @@ def get_start(entity):
     return STATE[entity]
 
 
+#pylint: disable=too-many-branches
 def sync_all_data(config, state, catalog):
     """ Sync data from tap source """
     CONFIG.update(config)
