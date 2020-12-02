@@ -51,11 +51,14 @@
                 "type": "string"
             }
           },
-        "properties_appliedresponsesla": {
-            "type": ["null", "number"]
-        },
         "properties_model": {
             "type": ["null", "string"]
+        },
+        "properties_operationalstatus": {
+            "type": ["null", "string"]
+        },
+        "properties_appliedresponsesla": {
+            "type": ["null", "number"]
         },
         "properties_responseduedate": {
              "type": ["null", "string"],
@@ -65,8 +68,11 @@
              "type": ["null", "string"],
              "format": "date-time"
         },
-        "properties_customer_id": {
+        "properties_project_id": {
             "type": ["null", "string"]        
+        },
+        "properties_customer_id": {
+            "type": ["null", "string"]
         },
         "properties_site_id": {
             "type": ["null", "string"]
