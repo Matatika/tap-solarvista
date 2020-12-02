@@ -8,6 +8,7 @@ import responses
 import singer
 import tap_solarvista
 import tap_solarvista.tests.utils as test_utils
+from tap_solarvista import catalog
 
 LOGGER = singer.get_logger()
 
@@ -321,6 +322,7 @@ class TestSync(unittest.TestCase):
         """ Test incremental workitem sync returns schema and full work-item detail records """
         self.catalog = test_utils.discover_catalog('workitem')
         mock_config = {
+            'personal_access_token': "mock-token", # disables get_access_token call
             'workitem_detail_enabled': None,
             'start_date': "2020-05-14T14:14:14.455852+00:00"
         }
@@ -408,6 +410,120 @@ class TestSync(unittest.TestCase):
             {'workitem_stream': 'mock-last-modified-state'}
         ]
         self.assertEqual(expected_states, [x.asdict()['value'] for x in state_messages])
+
+
+    @responses.activate  # intercept HTTP calls within this method
+    def test_sync_workitem_history(self):
+        """ Test sync history of work-item """
+        self.catalog = catalog.discover(['work-item', 'work-item-history'])
+        mock_config = {
+            'personal_access_token': "mock-token", # disables get_access_token call
+            'workitem_detail_enabled': None,
+            'start_date': "2020-05-14T14:14:14.455852+00:00"
+        }
+        mock_state = {}
+
+        mock_workitem_data = {
+            'items': [{
+                "workItemId": "mock-workitem-id"
+            }]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/workflow/v4/mock-account-id"
+                + "/workItems/search",
+            json=mock_workitem_data,
+        )
+        mock_workitem_history_data = {
+            "workItemId": "mock-workitem-id",
+            "workflowId": "74f6d038-a676-48dd-ac3a-a052907d9570",
+            "stages": [
+                {
+                    "stageDisplayName": "Unassigned",
+                    "stageType": "Unassigned"
+                },
+                {
+                    "assignedUser": {
+                        "displayName": "Mock User",
+                        "email": "user@mock.com",
+                        "userId": "6521aa9b-b9a2-4254-b85a-4b523d0f312c"
+                    },
+                    "stageDisplayName": "Assigned",
+                    "stageType": "Assigned",
+                    "transition": {
+                        "fromStageType": "Unassigned",
+                        "processOrder": 1,
+                        "receivedAt": "2020-12-01T15:28:21.6370267+00:00",
+                        "status": "submitted",
+                        "toStageType": "Assigned",
+                        "transitionedAt": "2020-12-01T15:28:21.5350844+00:00",
+                        "transitionedBy": {
+                            "displayName": "A Nother",
+                            "email": "another@mock.com",
+                            "userId": "9119e52d-95d9-4757-9657-99ed383f6bc5"
+                        },
+                        "transitionId": "6adc63f9-f860-4d9d-bbd5-628bf456fc8f",
+                        "violatesStageExclusivity": False
+                    }
+                }
+            ]
+        }
+        responses.add(
+            responses.GET,
+            "https://api.solarvista.com/workflow/v4/mock-account-id"
+                + "/workItems/mock-workitem-id/history",
+            json=mock_workitem_history_data,
+        )
+
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
+        self.assertEqual(len(responses.calls), 2,
+                         "Expecting 2 calls one to search another to history")
+
+        self.assertEqual(len(SINGER_MESSAGES), 5)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[4], singer.RecordMessage)
+
+        schema_messages = list(filter(
+            lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
+        self.assertEqual(['workitem_stream', 'workitemhistory_stream'],
+                            [x.asdict()['stream'] for x in schema_messages])
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [
+            {'workItemHistoryId': "mock-workitem-id_0",
+                'workItemId': "mock-workitem-id",
+                'workflowId': "74f6d038-a676-48dd-ac3a-a052907d9570",
+                'stage_stageDisplayName': "Unassigned",
+                'stage_stageType': "Unassigned"
+            },
+            {'workItemHistoryId': "mock-workitem-id_1",
+                'workItemId': "mock-workitem-id",
+                'workflowId': "74f6d038-a676-48dd-ac3a-a052907d9570",
+                'stage_assignedUser_displayName': "Mock User",
+                'stage_assignedUser_email': "user@mock.com",
+                'stage_assignedUser_userId': "6521aa9b-b9a2-4254-b85a-4b523d0f312c",
+                'stage_stageDisplayName': "Assigned",
+                'stage_stageType': "Assigned",
+                'stage_transition_fromStageType': "Unassigned",
+                'stage_transition_processOrder': 1,
+                'stage_transition_receivedAt': "2020-12-01T15:28:21.6370267+00:00",
+                'stage_transition_status': "submitted",
+                'stage_transition_toStageType': "Assigned",
+                'stage_transition_transitionedAt': "2020-12-01T15:28:21.5350844+00:00",
+                'stage_transition_transitionedBy_displayName': "A Nother",
+                'stage_transition_transitionedBy_email': "another@mock.com",
+                'stage_transition_transitionedBy_userId': "9119e52d-95d9-4757-9657-99ed383f6bc5",
+                'stage_transition_transitionId': "6adc63f9-f860-4d9d-bbd5-628bf456fc8f",
+                'stage_transition_violatesStageExclusivity': False
+            },
+            {'workItemId': "mock-workitem-id"}
+        ]
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
 
     @patch('tap_solarvista.sync.sync_datasource')

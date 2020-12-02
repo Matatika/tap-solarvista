@@ -28,6 +28,8 @@ def discover(selected_datasources):
         key_properties = ['reference']
         if stream_id == 'users_stream':
             key_properties = ['userId']
+        if stream_id == 'workitemhistory_stream':
+            key_properties = ['workItemHistoryId']
 
         streams.append(
             CatalogEntry(
@@ -45,4 +47,5 @@ def discover(selected_datasources):
                 replication_method=stream_replication_method,
             )
         )
+
     return Catalog(streams)

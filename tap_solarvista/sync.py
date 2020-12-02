@@ -23,16 +23,20 @@ def sync_all_data(config, state, catalog):
     CONFIG.update(config)
     STATE.update(state)
 
-    # Loop over selected streams in catalog
+    # Write all schema messages for selected streams in catalog
     for stream in catalog.get_selected_streams(state):
-        LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
-
         singer.write_schema(
             stream_name=stream.tap_stream_id,
             schema=stream.schema.to_dict(),
             key_properties=stream.key_properties,
         )
 
+    # Sync all selected streams in catalog
+    selected_streams = catalog.get_selected_streams(state)
+    for stream in selected_streams:
+        if stream.tap_stream_id == 'workitemhistory_stream':
+            break
+        LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
         continuation = None
         with singer.metrics.record_counter(stream.tap_stream_id) as counter:
             while True:
@@ -56,7 +60,7 @@ def sync_all_data(config, state, catalog):
                             merged.update(item)
                             if CONFIG.get('workitem_detail_enabled') is not None:
                                 merged.update(fetch_workitemdetail(item['workItemId']))
-                            #merged.update(fetch_workitemhistory(item['workItemId']))
+                            sync_workitemhistory(catalog, item['workItemId'])
                             tap_data.append(
                                 flatten_json(merged)
                             )
@@ -110,11 +114,11 @@ def transform_search_to_look_like_rowdata(response_data):
     if response_data['items']:
         rows = []
         for item in response_data['items']:
-            item["properties"] = item.pop("fieldValues")
+            if item.get("fieldValues"):
+                item["properties"] = item.pop("fieldValues")
             rows.append({ "rowData": item})
         new_data['rows'] = rows
     return new_data
-
 
 def sync_datasource(stream, continue_from):
     """ Sync data from tap source with continuation """
@@ -129,13 +133,50 @@ def sync_datasource(stream, continue_from):
         return fetch("POST", uri, body)
     return None
 
+def sync_workitemhistory(catalog, workitem_id):
+    """ Sync data from work item history """
+    if workitem_id is not None:
+        workitem_history_stream = catalog.get_stream('workitemhistory_stream')
+        if workitem_history_stream and workitem_history_stream.is_selected():
+            uri = "https://api.solarvista.com/workflow/v4/%s/workItems/%s/history" \
+                % (CONFIG.get('account'), workitem_id)
+            history_rows = transform_workitemhistory_to_rowdata(fetch("GET", uri, None))
+            if history_rows.get('rows'):
+                tap_data = []
+                for history_row in history_rows['rows']:
+                    tap_data.append(flatten_json(history_row['rowData']))
+                write_data(workitem_history_stream, tap_data)
+
 def fetch_workitemdetail(workitem_id):
     """ Fetch workitem detail """
     if workitem_id is not None:
         uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s" \
             % (CONFIG.get('account'), workitem_id)
-        return fetch("GET", uri, None)
+        response_data = fetch("GET", uri, None)
+        return response_data
     return None
+
+def transform_workitemhistory_to_rowdata(response_data):
+    """ transform the work item history response to row data """
+    if response_data is None:
+        return None
+    workitem_data = {}
+    for k, value in response_data.items():
+        if k != 'stages':
+            workitem_data[k] = value
+
+    new_data = {}
+    for k, value in response_data.items():
+        if k == 'stages':
+            rows = []
+            for i, stage in enumerate(value):
+                row_data = {}
+                row_data['workItemHistoryId'] = workitem_data['workItemId'] + "_" + str(i)
+                row_data.update(workitem_data)
+                row_data['stage'] = stage
+                rows.append({ "rowData": row_data})
+            new_data['rows'] = rows
+    return new_data
 
 def fetch(method, uri, body):
     """ Fetch from Solarvista API """
@@ -220,12 +261,16 @@ def write_data(stream, tap_data):
         # write one or more rows to the stream:
         singer.write_records(stream.tap_stream_id, [row])
         if bookmark_column:
-            if is_sorted:
-                # update bookmark to latest value
-                singer.write_state({stream.tap_stream_id: row[bookmark_column]})
+            if row.get(bookmark_column):
+                if is_sorted:
+                    # update bookmark to latest value
+                    singer.write_state({stream.tap_stream_id: row[bookmark_column]})
+                else:
+                    # if data unsorted, save max value until end of writes
+                    max_bookmark = max(max_bookmark, row[bookmark_column])
             else:
-                # if data unsorted, save max value until end of writes
-                max_bookmark = max(max_bookmark, row[bookmark_column])
+                LOGGER.error("[%s] bookmark value not found in column [%s]",
+                             stream.tap_stream_id, bookmark_column)
 
     if bookmark_column and not is_sorted:
         singer.write_state({stream.tap_stream_id: max_bookmark})

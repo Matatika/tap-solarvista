@@ -1,0 +1,39 @@
+{
+    "properties": {
+        "workItemId": {
+            "type": ["null", "string"]
+        },
+        "workflowId": {
+            "type": ["null", "string"]
+        },
+        "stage_assignedUser_userId": {
+            "type": ["null", "string"]
+        },
+        "stage_assignedUser_displayName": {
+            "type": ["null", "string"]
+        },
+        "stage_stageDisplayName": {
+            "type": ["null", "string"]
+        },
+        "stage_stageType": {
+            "type": ["null", "string"]
+        },
+        "stage_transition_fromStageType": {
+            "type": ["null", "string"]
+        },
+        "stage_transition_receivedAt": {
+            "type": ["string"],
+            "format": "date-time"
+        },
+        "stage_transition_toStageType": {
+            "type": ["null", "string"]
+        },
+        "stage_transition_transitionedAt": {
+            "type": ["string"],
+            "format": "date-time"
+        },
+        "stage_transition_transitionId": {
+            "type": ["string"]
+        }
+    }
+}
