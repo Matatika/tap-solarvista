@@ -38,7 +38,7 @@ def sync_all_data(config, state, catalog):
     selected_streams = catalog.get_selected_streams(state)
     for stream in selected_streams:
         if stream.tap_stream_id == 'workitemhistory_stream':
-            break
+            continue
         LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
         continuation = None
         with singer.metrics.record_counter(stream.tap_stream_id) as counter:
