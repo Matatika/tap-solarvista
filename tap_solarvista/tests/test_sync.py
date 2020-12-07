@@ -495,8 +495,8 @@ class TestSync(unittest.TestCase):
 
         schema_messages = list(filter(
             lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
-        self.assertEqual(['workitem_stream', 'workitemhistory_stream'],
-                            [x.asdict()['stream'] for x in schema_messages])
+        self.assertEquals(sorted(['workitem_stream', 'workitemhistory_stream']),
+                            sorted([x.asdict()['stream'] for x in schema_messages]))
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
