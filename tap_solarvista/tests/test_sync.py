@@ -63,6 +63,8 @@ class TestSync(unittest.TestCase):
         """ Setup the test objects and helpers """
         self.catalog = test_utils.discover_catalog('site')
         del SINGER_MESSAGES[:]  # prefer SINGER_MESSAGES.clear(), only available on python3
+        tap_solarvista.sync.CONFIG = {}
+        tap_solarvista.sync.STATE = {}
 
     @responses.activate  # intercept HTTP calls within this method
     def test_sync_token(self):
@@ -322,6 +324,7 @@ class TestSync(unittest.TestCase):
         """ Test incremental workitem sync returns schema and full work-item detail records """
         self.catalog = test_utils.discover_catalog('workitem')
         mock_config = {
+            'account': 'mock-account-id',
             'personal_access_token': "mock-token", # disables get_access_token call
             'workitem_detail_enabled': None,
             'start_date': "2020-05-14T14:14:14.455852+00:00"
@@ -417,6 +420,7 @@ class TestSync(unittest.TestCase):
         """ Test sync history of work-item """
         self.catalog = catalog.discover(['work-item', 'work-item-history'])
         mock_config = {
+            'account': 'mock-account-id',
             'personal_access_token': "mock-token", # disables get_access_token call
             'workitem_detail_enabled': None,
             'start_date': "2020-05-14T14:14:14.455852+00:00"
