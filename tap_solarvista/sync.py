@@ -22,7 +22,9 @@ def get_start(entity):
 def sync_all_data(config, state, catalog):
     """ Sync data from tap source """
     CONFIG.update(config)
+    LOGGER.info("CONFIG [%s]", CONFIG)
     STATE.update(state)
+    LOGGER.info("STATE [%s]", STATE)
 
     # Write all schema messages for selected streams in catalog
     for stream in catalog.get_selected_streams(state):
