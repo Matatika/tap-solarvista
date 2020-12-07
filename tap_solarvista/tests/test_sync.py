@@ -4,6 +4,7 @@ try:
     from unittest.mock import patch
 except ImportError:
     from mock import patch
+import json
 import responses
 import singer
 import tap_solarvista
@@ -375,9 +376,10 @@ class TestSync(unittest.TestCase):
         self.assertEqual(len(responses.calls), 1, "Expecting 1 call to search")
         self.assertEqual(responses.calls[0].request.url,
                          "https://api.solarvista.com/workflow/v4/mock-account-id/workItems/search")
-        self.assertEqual(responses.calls[0].request.body,
-                         "{\"lastModifiedAfter\": \"2020-05-14T14:14:14.455852+00:00\", " +
-                            "\"orderBy\": \"lastModified\", \"orderByDirection\": \"descending\"}")
+        request_body = json.loads(responses.calls[0].request.body)
+        self.assertEqual(request_body["lastModifiedAfter"], "2020-05-14T14:14:14.455852+00:00")
+        self.assertEqual(request_body["orderBy"], "lastModified")
+        self.assertEqual(request_body["orderByDirection"], "descending")
 
         self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
