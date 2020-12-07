@@ -66,6 +66,7 @@ class TestSync(unittest.TestCase):
         del SINGER_MESSAGES[:]  # prefer SINGER_MESSAGES.clear(), only available on python3
         tap_solarvista.sync.CONFIG = {}
         tap_solarvista.sync.STATE = {}
+        responses.reset()
 
     @responses.activate  # intercept HTTP calls within this method
     def test_sync_token(self):
