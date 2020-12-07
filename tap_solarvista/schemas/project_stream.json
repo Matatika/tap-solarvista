@@ -7,10 +7,6 @@
              "type": ["null", "string"],
              "format": "date-time"
         },
-        "last-update": {
-             "type": ["null", "string"],
-             "format": "date-time"
-        },
         "customer_id": {
             "type": ["null", "string"]
         },
@@ -58,9 +54,6 @@
         "operationalstatus": {
             "type": ["null", "string"]
         },
-        "verisaestatus": {
-            "type": ["null", "string"]
-        },
         "status": {
             "type": ["null", "string"]
         },
@@ -100,11 +93,11 @@
         "source": {
             "type": ["null", "string"]
         },
-        "category": {
-            "type": ["null", "string"]
-        },
         "appliedresponsesla": {
             "type": ["null", "number"]
+        },
+        "workitemcreated": {
+            "type": ["null", "boolean"]
         }
     }
 }
