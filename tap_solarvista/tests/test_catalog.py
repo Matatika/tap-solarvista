@@ -21,8 +21,10 @@ class TestCatalog(unittest.TestCase):
         self.assertEqual(sorted(selected_stream_ids),
                          ['customer_stream',
                           'equipment_stream',
+                          'project_stream',
                           'site_stream',
                           'skill_stream',
+                          'territory_stream',
                           'users_stream',
                           'workitem_stream',
                           'workitemhistory_stream',])
