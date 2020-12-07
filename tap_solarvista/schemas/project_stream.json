@@ -1,0 +1,110 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["null", "string"]
+        },
+        "createdon": {
+             "type": ["null", "string"],
+             "format": "date-time"
+        },
+        "last-update": {
+             "type": ["null", "string"],
+             "format": "date-time"
+        },
+        "customer_id": {
+            "type": ["null", "string"]
+        },
+        "bill-to_id": {
+            "type": ["null", "string"]
+        },
+        "site_id": {
+            "type": ["null", "string"]
+        },
+        "primarystatus_id": {
+            "type": ["null", "string"]
+        },
+        "secondarystatus_id": {
+            "type": ["null", "string"]
+        },
+        "project-type": {
+            "type": ["null", "string"]
+        },
+        "name": {
+            "type": ["null", "string"]
+        },
+        "description": {
+            "type": ["null", "string"]
+        },
+        "assetnumber": {
+            "type": ["null", "string"]
+        },
+        "serialnumber": {
+            "type": ["null", "string"]
+        },
+        "model": {
+            "type": ["null", "string"]
+        },
+        "workcenter": {
+            "type": ["null", "string"]
+        },
+        "responseduedate": {
+             "type": ["null", "string"],
+             "format": "date-time"
+        },
+        "fixduedate": {
+             "type": ["null", "string"],
+             "format": "date-time"
+        },
+        "operationalstatus": {
+            "type": ["null", "string"]
+        },
+        "verisaestatus": {
+            "type": ["null", "string"]
+        },
+        "status": {
+            "type": ["null", "string"]
+        },
+        "code": {
+            "type": ["null", "string"]
+        },
+        "objectives": {
+            "type": ["null", "string"]
+        },
+        "order-ref": {
+            "type": ["null", "string"]
+        },
+        "phonenumber": {
+            "type": ["null", "string"]
+        },
+        "revenue-expected": {
+            "type": ["null", "number"]
+        },
+        "costs-expected": {
+            "type": ["null", "number"]
+        },
+        "working-time-expected": {
+            "type": ["null", "number"]
+        },
+        "travel-time-expected": {
+            "type": ["null", "number"]
+        },
+        "progress-percent": {
+            "type": ["null", "number"]
+        },
+        "progress-statement": {
+            "type": ["null", "string"]
+        },
+        "memo": {
+            "type": ["null", "string"]
+        },
+        "source": {
+            "type": ["null", "string"]
+        },
+        "category": {
+            "type": ["null", "string"]
+        },
+        "appliedresponsesla": {
+            "type": ["null", "number"]
+        }
+    }
+}

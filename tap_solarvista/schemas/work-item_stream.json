@@ -77,6 +77,9 @@
         "properties_site_id": {
             "type": ["null", "string"]
         },
+        "properties_territories_id": {
+            "type": ["null", "string"]
+        },
         "properties_equipment_id": {
             "type": ["null", "string"]
         },

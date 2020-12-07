@@ -1,0 +1,28 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["string"]
+        },
+        "name": {
+            "type": ["string"]
+        },
+        "description": {
+            "type": ["null", "string"]
+        },
+        "status": {
+            "type": ["string"]
+        },
+        "office-depot_id": {
+            "type": ["null", "string"]
+        },
+        "category_id": {
+            "type": ["null", "string"]
+        },
+        "category_title": {
+            "type": ["null", "string"]
+        },
+        "category_subtitle": {
+            "type": ["null", "string"]
+        }
+    }
+}
