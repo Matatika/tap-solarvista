@@ -380,7 +380,7 @@ class TestSync(unittest.TestCase):
         request_body = json.loads(responses.calls[0].request.body)
         self.assertEqual(request_body["lastModifiedAfter"], "2020-05-14T14:14:14.455852+00:00")
         self.assertEqual(request_body["orderBy"], "lastModified")
-        self.assertEqual(request_body["orderByDirection"], "descending")
+        self.assertEqual(request_body["orderByDirection"], "ascending")
 
         self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)

@@ -87,7 +87,7 @@ def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefine
     query = {
       'lastModifiedAfter': start,
       'orderBy': bookmark_property,
-      'orderByDirection': "descending"
+      'orderByDirection': "ascending"
     }
     if continue_from is not None:
         query['continuationToken'] = continue_from
