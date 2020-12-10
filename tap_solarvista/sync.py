@@ -71,9 +71,9 @@ def sync_all_data(config, state, catalog):
                             tap_data.append(
                                 flatten_json(row['rowData'])
                             )
+                        counter.increment()
 
                 write_data(stream, tap_data)
-                counter.increment()
                 if continuation is None:
                     break
 
@@ -115,13 +115,13 @@ def transform_search_to_look_like_rowdata(response_data):
     new_data = {}
     if response_data.get('continuationToken'):
         new_data['continuationToken'] = response_data['continuationToken']
+    rows = []
     if response_data['items']:
-        rows = []
         for item in response_data['items']:
             if item.get("fieldValues"):
                 item["properties"] = item.pop("fieldValues")
             rows.append({ "rowData": item})
-        new_data['rows'] = rows
+    new_data['rows'] = rows
     return new_data
 
 def sync_datasource(stream, continue_from):

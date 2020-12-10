@@ -14,12 +14,17 @@ from tap_solarvista import catalog
 LOGGER = singer.get_logger()
 
 SINGER_MESSAGES = []
-
 def accumulate_singer_messages(message):
     """ function to collect singer library write_message in tests """
     SINGER_MESSAGES.append(message)
-
 singer.messages.write_message = accumulate_singer_messages
+
+SINGER_METRICS = []
+def accumulate_singer_metrics(_logger, point):
+    """ function to collect singer library metrics in tests """
+    SINGER_METRICS.append(point)
+singer.metrics.log = accumulate_singer_metrics
+
 
 MOCK_TOKEN = {
     "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij",
@@ -64,6 +69,7 @@ class TestSync(unittest.TestCase):
         """ Setup the test objects and helpers """
         self.catalog = test_utils.discover_catalog('site')
         del SINGER_MESSAGES[:]  # prefer SINGER_MESSAGES.clear(), only available on python3
+        del SINGER_METRICS[:]
         tap_solarvista.sync.CONFIG = {}
         tap_solarvista.sync.STATE = {}
         responses.reset()
@@ -591,6 +597,39 @@ class TestSync(unittest.TestCase):
             'customer_Id': "GB-38884-E10"}
         ]
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
+    @patch('tap_solarvista.sync.sync_datasource')
+    def test_sync_metrics(self, mock_fetch_data):
+        """ Test sync outputs the correct metrics for number of records """
+        self.catalog = test_utils.discover_catalog('site')
+        state = {}
+
+        mock_data = {
+            'rows': [
+                {
+                    "rowData": {
+                        "reference": "mock-record-1"
+                    }
+                },
+                {
+                    "rowData": {
+                        "reference": "mock-record-2"
+                    }
+                }
+            ]
+        }
+
+        mock_fetch_data.side_effect = [mock_data, None]
+
+        tap_solarvista.sync.sync_all_data({}, state, self.catalog)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
+        self.assertEqual(len(SINGER_METRICS), 1)
+        metric_message = SINGER_METRICS[0]
+        self.assertIsInstance(metric_message, singer.metrics.Point)
+        self.assertEqual(2, metric_message.value)
 
 if __name__ == '__main__':
     unittest.main()
