@@ -141,8 +141,8 @@ def sync_workitemhistory(catalog, workitem_id):
     """ Sync data from work item history """
     if workitem_id is not None:
         workitem_history_stream = catalog.get_stream('workitemhistory_stream')
-        with singer.metrics.record_counter(workitem_history_stream.tap_stream_id) as counter:
-            if workitem_history_stream and workitem_history_stream.is_selected():
+        if workitem_history_stream and workitem_history_stream.is_selected():
+            with singer.metrics.record_counter(workitem_history_stream.tap_stream_id) as counter:
                 uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s/history" \
                     % (CONFIG.get('account'), workitem_id)
                 history_rows = transform_workitemhistory_to_rowdata(fetch("GET", uri, None))
