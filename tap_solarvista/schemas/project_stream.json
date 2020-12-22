@@ -7,6 +7,10 @@
              "type": ["null", "string"],
              "format": "date-time"
         },
+        "closedon": {
+             "type": ["null", "string"],
+             "format": "date-time"
+        },
         "customer_id": {
             "type": ["null", "string"]
         },
