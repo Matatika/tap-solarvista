@@ -425,6 +425,104 @@ class TestSync(unittest.TestCase):
 
 
     @responses.activate  # intercept HTTP calls within this method
+    def test_sync_workitem_properties_camel_case(self):
+        """ Test workitem sync returns all properties where they include camel case """
+        self.catalog = test_utils.discover_catalog('workitem')
+        mock_config = {
+            'account': 'mock-account-id',
+            'personal_access_token': "mock-token", # disables get_access_token call
+            'workitem_detail_enabled': None,
+            'start_date': "2020-05-14T14:14:14.455852+00:00"
+        }
+        mock_state = {}
+
+        mock_workitem_data = {
+            'items': [
+                {
+                    "workItemId": "bc3071a2-0ddf-4e4c-819b-9bec8f968570",
+                    "reference": "AP0001",
+                    "lastModified": "mock-last-modified-state",
+                    "fieldValues": {
+                        "site": {
+                            "id": "GB-54778-S7",
+                        },
+                        "customer": {
+                            "id": "GB-4998-E5",
+                        },
+                        "territories": {
+                            "id": "TER001",
+                            "title": "Hertfordshire"
+                        },
+                    },
+                },
+                {
+                    "workItemId": "55a98839-c04f-4b95-b99c-b7e2537f8809",
+                    "reference": "AP0002",
+                    "lastModified": "mock-last-modified-state",
+                    "fieldValues": {
+                        "site": {
+                            "id": "GB-54778-S7",
+                        },
+                        "customer": {
+                            "id": "GB-4998-E5",
+                        },
+                        "territories": {
+                            "Id": "TER023",
+                            "Title": "Newcastle & Teeside"
+                        },
+                    },
+                },
+            ]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/workflow/v4/mock-account-id"
+                + "/workItems/search",
+            json=mock_workitem_data,
+        )
+
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
+
+        self.assertEqual(len(responses.calls), 1, "Expecting 1 call to search")
+        self.assertEqual(responses.calls[0].request.url,
+                         "https://api.solarvista.com/workflow/v4/mock-account-id/workItems/search")
+        request_body = json.loads(responses.calls[0].request.body)
+        self.assertEqual(request_body["lastModifiedAfter"], "2020-05-14T14:14:14.455852+00:00")
+        self.assertEqual(request_body["orderBy"], "lastModified")
+        self.assertEqual(request_body["orderByDirection"], "ascending")
+
+        self.assertEqual(len(SINGER_MESSAGES), 5)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[4], singer.StateMessage)
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [
+            {'workItemId': "bc3071a2-0ddf-4e4c-819b-9bec8f968570",
+             'reference': "AP0001",
+             'lastModified': 'mock-last-modified-state',
+             'properties_site_id': "GB-54778-S7",
+             'properties_customer_id': "GB-4998-E5",
+             'properties_territories_id': "TER001",
+             'properties_territories_title': "Hertfordshire",
+            },
+            {'workItemId': "55a98839-c04f-4b95-b99c-b7e2537f8809",
+             'reference': "AP0002",
+             'lastModified': 'mock-last-modified-state',
+             'properties_site_id': "GB-54778-S7",
+             'properties_customer_id': "GB-4998-E5",
+             'properties_territories_id': "TER023",
+             'properties_territories_title': "Newcastle & Teeside",
+            },
+        ]
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
+
+    @responses.activate  # intercept HTTP calls within this method
     def test_sync_workitem_history(self):
         """ Test sync history of work-item """
         self.catalog = catalog.discover(['work-item', 'work-item-history'])
@@ -564,7 +662,7 @@ class TestSync(unittest.TestCase):
                         "postalCode": "GL51 0TF"
                     },
                     "customer": {
-                        "Id": "GB-38884-E10",
+                        "id": "GB-38884-E10",
                     },
                 }
             }]
@@ -594,7 +692,7 @@ class TestSync(unittest.TestCase):
             'address_administrativeRegion1': "England",
             'address_country': "United Kingdom",
             'address_postalCode': "GL51 0TF",
-            'customer_Id': "GB-38884-E10"}
+            'customer_id': "GB-38884-E10"}
         ]
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 

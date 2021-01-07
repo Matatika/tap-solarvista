@@ -246,6 +246,8 @@ def get_access_token():
             return access_token
     return None
 
+lowerFirstCharacter = lambda s: s[:1].lower() + s[1:] if s else ''
+
 def flatten_json(unformated_json):
     """ Flatten a json object, returning a single level underscore separated json structure """
     out = {}
@@ -253,7 +255,7 @@ def flatten_json(unformated_json):
     def flatten(json_structure, name=''):
         if isinstance(json_structure, dict):
             for element in json_structure:
-                flatten(json_structure[element], name + element + '_')
+                flatten(json_structure[element], name + lowerFirstCharacter(element) + '_')
         else:
             out[name[:-1]] = json_structure
 
