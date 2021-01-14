@@ -17,7 +17,7 @@
              "type": ["string"],
              "format": "date-time"
         },
-        "isComplete": {
+        "isCompleted": {
             "type": ["null", "boolean"]
         },
         "currentStage_stageType": {

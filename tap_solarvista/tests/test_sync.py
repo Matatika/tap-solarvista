@@ -41,7 +41,7 @@ MOCK_WORKITEM_DETAIL = {
     "currentStage": {
         "stageType": "Working",
     },
-    "isComplete": False,
+    "isCompleted": False,
     "description": "Aaron test repair",
     "properties": {
         "site": {
@@ -293,7 +293,7 @@ class TestSync(unittest.TestCase):
              'lastModified': '2020-05-14T14:24:35.8273218+00:00',
              'currentStage_stageType': 'Working',
              'description': "Aaron test repair",
-             'isComplete': False,
+             'isCompleted': False,
              'properties_customer_id': "GB-4998-E5",
              'properties_site_id': "GB-54778-S7",
              'properties_equipment_id': "GB1261",
@@ -315,7 +315,7 @@ class TestSync(unittest.TestCase):
             'lastModified': '2020-05-14T14:24:35.8273218+00:00',
             'currentStage_stageType': 'Working',
             'description': "Aaron test repair",
-            'isComplete': False,
+            'isCompleted': False,
             'properties_customer_id': "GB-4998-E5",
             'properties_site_id': "GB-54778-S7",
             'properties_equipment_id': "GB1261",
@@ -351,7 +351,7 @@ class TestSync(unittest.TestCase):
                     "stageType": "Working",
                 },
                 "description": "Aaron test repair",
-                "isComplete": False,
+                "isCompleted": False,
                 "fieldValues": {
                     "site": {
                         "id": "GB-54778-S7",
@@ -405,7 +405,7 @@ class TestSync(unittest.TestCase):
              'lastModified': 'mock-last-modified-state',
              'currentStage_stageType': 'Working',
              'description': "Aaron test repair",
-             'isComplete': False,
+             'isCompleted': False,
              'properties_customer_id': "GB-4998-E5",
              'properties_site_id': "GB-54778-S7",
              'properties_equipment_id': "GB1261",
