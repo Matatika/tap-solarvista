@@ -38,6 +38,15 @@
             "type": ["string"],
             "format": "date-time"
         },
+        "stage_transition_transitionedBy_displayName": {
+            "type": ["null", "string"]
+        },
+        "stage_transition_transitionedBy_email": {
+            "type": ["null", "string"]
+        },
+        "stage_transition_transitionedBy_userId": {
+            "type": ["null", "string"]
+        },
         "stage_transition_transitionId": {
             "type": ["string"]
         }
