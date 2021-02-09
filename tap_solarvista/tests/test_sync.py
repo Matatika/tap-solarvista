@@ -697,6 +697,72 @@ class TestSync(unittest.TestCase):
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
     @patch('tap_solarvista.sync.sync_datasource')
+    def test_sync_project(self, mock_fetch_data):
+        """ Test projects sync returns all record elements """
+        self.catalog = test_utils.discover_catalog('site')
+        state = {}
+
+        project_data = {
+            'continuationToken': 'moredata',
+            'rows': [{
+                "rowData": {
+                    "reference": "75521249",
+                    "project-type": "Repair",
+                    "workcenter": None,
+                    "createdon": "2021-02-09T11:35:00Z",
+                    "responseduedate": None,
+                    "fixduedate": "2021-02-10T19:37:00Z",
+                    "appliedresponsesla": None,
+                    "appliedfixsla": 24.0,
+                    "closedon": None,
+                    "customer": {
+                        "Id": "2386264880",
+                    },
+                    "phonenumber": "01142 682933",
+                    "revenue-expected": None,
+                    "costs-expected": None,
+                    "working-time-expected": None,
+                    "travel-time-expected": None,
+                    "progress-percent": None,
+                    "last-update": "2021-02-09T11:45:23Z",
+                }
+            }]
+        }
+
+        mock_fetch_data.side_effect = [project_data, None]
+
+        tap_solarvista.sync.sync_all_data({}, state, self.catalog)
+
+        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [
+            {'reference': "75521249",
+            'project-type': "Repair",
+            'workcenter': None,
+            'createdon': "2021-02-09T11:35:00Z",
+            'responseduedate': None,
+            'fixduedate': "2021-02-10T19:37:00Z",
+            'appliedresponsesla': None,
+            'appliedfixsla': 24.0,
+            'closedon': None,
+            'customer_id': "2386264880",
+            'phonenumber': "01142 682933",
+            'revenue-expected': None,
+            'costs-expected': None,
+            'working-time-expected': None,
+            'travel-time-expected': None,
+            'progress-percent': None,
+            'last-update': "2021-02-09T11:45:23Z",
+            }
+        ]
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
+    @patch('tap_solarvista.sync.sync_datasource')
     def test_sync_metrics(self, mock_fetch_data):
         """ Test sync outputs the correct metrics for number of records """
         self.catalog = test_utils.discover_catalog('site')
