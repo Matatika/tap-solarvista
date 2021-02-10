@@ -50,7 +50,14 @@
             "items": {
                 "type": "string"
             }
-          },
+        },
+        "schedule_durationMinutes": {
+            "type": ["null", "number"]
+        },
+        "schedule_startTime": {
+             "type": ["string"],
+             "format": "date-time"
+        },
         "properties_model": {
             "type": ["null", "string"]
         },
