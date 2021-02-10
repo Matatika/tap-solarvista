@@ -104,6 +104,9 @@
         },
         "properties_duration-hours": {
             "type": ["null", "number"]
+        },
+        "properties_source": {
+            "type": ["null", "string"]
         }
     }
 }

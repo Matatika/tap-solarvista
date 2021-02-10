@@ -62,6 +62,12 @@
         "operationalstatus": {
             "type": ["null", "string"]
         },
+        "verisae-category": {
+            "type": ["null", "string"]
+        },
+        "verisae-subcategory": {
+            "type": ["null", "string"]
+        },
         "status": {
             "type": ["null", "string"]
         },
@@ -102,6 +108,9 @@
             "type": ["null", "string"]
         },
         "appliedresponsesla": {
+            "type": ["null", "number"]
+        },
+        "appliedfixsla": {
             "type": ["null", "number"]
         },
         "workitemcreated": {
