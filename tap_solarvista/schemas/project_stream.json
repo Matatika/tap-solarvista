@@ -7,7 +7,7 @@
              "type": ["null", "string"],
              "format": "date-time"
         },
-        "last-update": {
+        "lastModified": {
              "type": ["null", "string"],
              "format": "date-time"
         },
