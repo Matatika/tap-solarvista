@@ -68,6 +68,9 @@
         "verisae-subcategory": {
             "type": ["null", "string"]
         },
+        "problemtype": {
+            "type": ["null", "string"]
+        },
         "status": {
             "type": ["null", "string"]
         },
