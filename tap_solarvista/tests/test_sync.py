@@ -895,7 +895,7 @@ class TestSync(unittest.TestCase):
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
-        record_messages = sorted(record_messages, key=lambda k: k.asdict()['record']['userId']) 
+        record_messages = sorted(record_messages, key=lambda k: k.asdict()['record']['userId'])
         expected_records = [
             {'userId': "mock-user-id"},
             {'userId': "mock-user-id2"},
