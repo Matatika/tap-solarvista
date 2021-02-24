@@ -3,6 +3,8 @@
 import json
 import requests
 from urllib3.util import Retry
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import singer
 from tap_solarvista.timeout_http_adapter import TimeoutHttpAdapter
 
@@ -36,20 +38,26 @@ def sync_all_data(config, state, catalog):
 
     # Sync all selected streams in catalog
     selected_streams = catalog.get_selected_streams(state)
+    user_stream = None
+    users = []
     for stream in selected_streams:
+        # workitemhistory will sync on each work item
         if stream.tap_stream_id == 'workitemhistory_stream':
+            continue
+        # appointments sync after all streams, once we have a list of users
+        if stream.tap_stream_id == 'appointment_stream':
             continue
         LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
         continuation = None
         with singer.metrics.record_counter(stream.tap_stream_id) as counter:
             while True:
-                tap_data = []
                 if (stream.tap_stream_id == 'workitem_stream'
                         and CONFIG.get('workitem_detail_enabled') is None):
                     response_data = sync_workitems_by_filter(stream,
                                             stream.replication_key, continuation)
                 else:
                     response_data = sync_datasource(stream, continuation)
+                tap_data = []
                 continuation = None
                 if response_data is not None:
                     if ('continuationToken' in response_data
@@ -69,6 +77,9 @@ def sync_all_data(config, state, catalog):
                             )
                         else:
                             item = row['rowData']
+                            if stream.tap_stream_id == 'users_stream':
+                                user_stream = stream
+                                users.append(item['userId'])
                             merged = {}
                             merged.update(item)
                             if 'lastModified' in row:
@@ -81,6 +92,50 @@ def sync_all_data(config, state, catalog):
                 write_data(stream, tap_data)
                 if continuation is None:
                     break
+            while True:
+                tap_data = []
+                continuation = None
+                if user_stream and users:
+                    LOGGER.info("Syncing stream:%s", "")
+                    response_data = sync_appointment(user_stream, continuation, users)
+                    if response_data is not None:
+                        process_response_data(catalog, user_stream, counter, response_data)
+                if continuation is None:
+                    break
+
+
+def process_response_data(catalog, stream, counter, response_data):
+    tap_data = []
+    continuation = None
+    if response_data is not None:
+        if ('continuationToken' in response_data
+                and response_data['continuationToken'] is not None
+                and len(response_data['continuationToken']) > 0):
+            continuation = response_data['continuationToken']
+        for row in response_data['rows']:
+            if stream.tap_stream_id == 'workitem_stream':
+                item = row['rowData']
+                merged = {}
+                merged.update(item)
+                if CONFIG.get('workitem_detail_enabled') is not None:
+                    merged.update(fetch_workitemdetail(item['workItemId']))
+                sync_workitemhistory(catalog, item['workItemId'])
+                tap_data.append(
+                    flatten_json(merged)
+                )
+            else:
+                item = row['rowData']
+                merged = {}
+                merged.update(item)
+                if 'lastModified' in row:
+                    merged.update({ 'lastModified': row['lastModified'] })
+                tap_data.append(
+                    flatten_json(merged)
+                )
+            counter.increment()
+
+    write_data(stream, tap_data)
+    return continuation
 
 
 def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefined_filter=None):
@@ -129,6 +184,20 @@ def transform_search_to_look_like_rowdata(response_data):
     new_data['rows'] = rows
     return new_data
 
+def transform_appointments_to_look_like_rowdata(response_data):
+    """ transform the appointments results, so we can reuse the sync loop """
+    if response_data is None:
+        return None
+    new_data = {}
+    if response_data.get('continuationToken'):
+        new_data['continuationToken'] = response_data['continuationToken']
+    rows = []
+    if response_data['appointments']:
+        for item in response_data['appointments']:
+            rows.append({ "rowData": item})
+    new_data['rows'] = rows
+    return new_data
+
 def sync_datasource(stream, continue_from):
     """ Sync data from tap source with continuation """
     if stream.stream_alias is not None:
@@ -140,6 +209,27 @@ def sync_datasource(stream, continue_from):
                 "continuationToken": continue_from
             })
         return fetch("POST", uri, body)
+    return None
+
+def sync_appointment(stream, continue_from, userIds):
+    """ Sync data from tap source with continuation """
+    if stream.stream_alias is not None:
+        body = None
+        uri = "https://api.solarvista.com/calendar/v2/%s/appointments/search/%s" \
+            % (CONFIG.get('account'), 'users')
+        oneYearPast = datetime.now() - relativedelta(years=1)
+        oneYearFuture = datetime.now() - relativedelta(years=1)
+        query = {
+            "from": oneYearPast.isoformat(),
+            "includeUnassigned": True,
+            "to": oneYearFuture.isoformat(),
+            "userIds": userIds
+        }
+        if continue_from is not None:
+            query['continuationToken'] = continue_from
+        body = json.dumps(query)
+        response_data = fetch("POST", uri, body)
+        return transform_appointments_to_look_like_rowdata(response_data)
     return None
 
 def sync_workitemhistory(catalog, workitem_id):

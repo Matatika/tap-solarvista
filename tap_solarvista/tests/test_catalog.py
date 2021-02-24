@@ -19,15 +19,18 @@ class TestCatalog(unittest.TestCase):
                            "Expect catalog to discover when no datasources supplied")
         selected_stream_ids = [s.tap_stream_id for s in local_catalog.streams]
         self.assertEqual(sorted(selected_stream_ids),
-                         ['customer_stream',
-                          'equipment_stream',
-                          'project_stream',
-                          'site_stream',
-                          'skill_stream',
-                          'territory_stream',
-                          'users_stream',
-                          'workitem_stream',
-                          'workitemhistory_stream',])
+                        [
+                            'appointment_stream',
+                            'customer_stream',
+                            'equipment_stream',
+                            'project_stream',
+                            'site_stream',
+                            'skill_stream',
+                            'territory_stream',
+                            'users_stream',
+                            'workitem_stream',
+                            'workitemhistory_stream',
+                        ])
 
     def test_catalog_selected(self):
         """ Test discover returns only the provided datasources """

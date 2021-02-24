@@ -7,6 +7,9 @@ except ImportError:
 import json
 import responses
 import singer
+from datetime import datetime
+import dateutil.relativedelta
+import dateutil.parser
 import tap_solarvista
 import tap_solarvista.tests.utils as test_utils
 from tap_solarvista import catalog
@@ -699,7 +702,7 @@ class TestSync(unittest.TestCase):
     @patch('tap_solarvista.sync.sync_datasource')
     def test_sync_project(self, mock_fetch_data):
         """ Test projects sync returns all record elements """
-        self.catalog = test_utils.discover_catalog('site')
+        self.catalog = test_utils.discover_catalog('project')
         state = {}
 
         project_data = {
@@ -794,6 +797,111 @@ class TestSync(unittest.TestCase):
         metric_message = SINGER_METRICS[0]
         self.assertIsInstance(metric_message, singer.metrics.Point)
         self.assertEqual(2, metric_message.value)
+
+    @responses.activate  # intercept HTTP calls within this method
+    def test_sync_user_appointment(self):
+        """ Test sync user appointments """
+        self.catalog = catalog.discover(['users', 'appointment'])
+        mock_config = {
+            'account': 'mock-account-id',
+            'personal_access_token': "mock-token", # disables get_access_token call
+            'start_date': "2020-05-14T14:14:14.455852+00:00"
+        }
+        mock_state = {}
+        mock_user_data = {
+            'rows': [
+                {
+                    "rowData": {
+                        "userId": "mock-user-id"
+                    }
+                },
+                {
+                    "rowData": {
+                        "userId": "mock-user-id2"
+                    }
+                }
+            ]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/users/data/query",
+            json=mock_user_data,
+        )
+        mock_user_appointment_data = {
+            "appointments": [
+                {
+                    "appointmentId": "b0ef95ef-7347-4e57-af3c-12ae8373e1c0",
+                    "displayColour": 4288988160,
+                    "end": "2021-02-26T17:30:00+00:00",
+                    "icon": "bell",
+                    "label": "Leave/Holiday PM only",
+                    "showAsHint": "foreground",
+                    "start": "2021-02-26T12:45:00+00:00",
+                    "userId": "mock-user-id",
+                    "workExclusivity": "cannotOverlap",
+                    "properties": {}
+                }
+            ]
+        }
+
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/calendar/v2/mock-account-id"
+                + "/appointments/search/users",
+            json=mock_user_appointment_data,
+        )
+
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
+        self.assertEqual(len(responses.calls), 2,
+                         "Expecting 2 calls one to users and another to appointments")
+        self.assertEqual(responses.calls[1].request.url,
+                         "https://api.solarvista.com/calendar/v2/mock-account-id/appointments/search/users")
+        request_body = json.loads(responses.calls[1].request.body)
+
+        oneYearPast = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
+        oneYearFuture = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
+        fromQuery = dateutil.parser.isoparse(request_body["from"])
+        toQuery = dateutil.parser.isoparse(request_body["to"])
+
+        self.assertEqual(fromQuery.replace(second=0, microsecond=0),
+            oneYearPast.replace(second=0, microsecond=0))
+        self.assertEqual(toQuery.replace(second=0, microsecond=0),
+            oneYearFuture.replace(second=0, microsecond=0))
+        self.assertEqual(request_body["includeUnassigned"], True)
+        self.assertEqual(request_body["userIds"], ["mock-user-id", "mock-user-id2"])
+
+        self.assertEqual(len(SINGER_MESSAGES), 5)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[4], singer.RecordMessage)
+
+        schema_messages = list(filter(
+            lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
+        self.assertEqual(sorted(['users_stream', 'appointment_stream']),
+                            sorted([x.asdict()['stream'] for x in schema_messages]))
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [
+            {'userId': "mock-user-id"},
+            {'userId': "mock-user-id2"},
+            {
+                'appointmentId': "b0ef95ef-7347-4e57-af3c-12ae8373e1c0",
+                'start': "2021-02-26T12:45:00+00:00",
+                'end': "2021-02-26T17:30:00+00:00",
+                'label': "Leave/Holiday PM only",
+                'userId': "mock-user-id",
+                'displayColour': 4288988160,
+                'icon': 'bell',
+                'showAsHint': 'foreground',
+                'workExclusivity': 'cannotOverlap',
+            },
+        ]
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
 if __name__ == '__main__':
     unittest.main()

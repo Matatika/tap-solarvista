@@ -1,0 +1,21 @@
+{
+    "properties": {
+        "appointmentId": {
+            "type": ["string"]
+        },
+        "label": {
+            "type": ["string"]
+        },
+        "userId": {
+            "type": ["string"]
+        },
+        "start": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "end": {
+             "type": ["string"],
+             "format": "date-time"
+        }
+    }
+}
