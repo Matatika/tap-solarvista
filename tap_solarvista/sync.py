@@ -38,14 +38,9 @@ def sync_all_data(config, state, catalog):
 
     # Sync all selected streams in catalog
     selected_streams = catalog.get_selected_streams(state)
-    user_stream = None
-    users = []
     for stream in selected_streams:
         # workitemhistory will sync on each work item
         if stream.tap_stream_id == 'workitemhistory_stream':
-            continue
-        # appointments sync after all streams, once we have a list of users
-        if stream.tap_stream_id == 'appointment_stream':
             continue
         LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
         continuation = None
@@ -55,51 +50,14 @@ def sync_all_data(config, state, catalog):
                         and CONFIG.get('workitem_detail_enabled') is None):
                     response_data = sync_workitems_by_filter(stream,
                                             stream.replication_key, continuation)
+                elif stream.tap_stream_id == 'appointment_stream':
+                    response_data = sync_appointment(stream, continuation)
                 else:
                     response_data = sync_datasource(stream, continuation)
                 tap_data = []
                 continuation = None
                 if response_data is not None:
-                    if ('continuationToken' in response_data
-                            and response_data['continuationToken'] is not None
-                            and len(response_data['continuationToken']) > 0):
-                        continuation = response_data['continuationToken']
-                    for row in response_data['rows']:
-                        if stream.tap_stream_id == 'workitem_stream':
-                            item = row['rowData']
-                            merged = {}
-                            merged.update(item)
-                            if CONFIG.get('workitem_detail_enabled') is not None:
-                                merged.update(fetch_workitemdetail(item['workItemId']))
-                            sync_workitemhistory(catalog, item['workItemId'])
-                            tap_data.append(
-                                flatten_json(merged)
-                            )
-                        else:
-                            item = row['rowData']
-                            if stream.tap_stream_id == 'users_stream':
-                                user_stream = stream
-                                users.append(item['userId'])
-                            merged = {}
-                            merged.update(item)
-                            if 'lastModified' in row:
-                                merged.update({ 'lastModified': row['lastModified'] })
-                            tap_data.append(
-                                flatten_json(merged)
-                            )
-                        counter.increment()
-
-                write_data(stream, tap_data)
-                if continuation is None:
-                    break
-            while True:
-                tap_data = []
-                continuation = None
-                if user_stream and users:
-                    LOGGER.info("Syncing stream:%s", "")
-                    response_data = sync_appointment(user_stream, continuation, users)
-                    if response_data is not None:
-                        process_response_data(catalog, user_stream, counter, response_data)
+                    continuation = process_response_data(catalog, stream, counter, response_data)
                 if continuation is None:
                     break
 
@@ -211,9 +169,33 @@ def sync_datasource(stream, continue_from):
         return fetch("POST", uri, body)
     return None
 
-def sync_appointment(stream, continue_from, userIds):
-    """ Sync data from tap source with continuation """
-    if stream.stream_alias is not None:
+def sync_appointment(stream, continue_from):
+    """ Sync appointments from tap source with continuation """
+    # first get all the users, aiming to make a single request for appointments
+    # although there will be multiple request to users if appointments has a continue token
+    users = []
+    user_continue_from = None
+    while True:
+        body = None
+        uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" \
+            % (CONFIG.get('account'), 'users')
+        if user_continue_from is not None:
+            body = json.dumps({
+                "continuationToken": continue_from
+            })
+        response_data = fetch("POST", uri, body)
+        if response_data is not None:
+            if ('continuationToken' in response_data
+                    and response_data['continuationToken'] is not None
+                    and len(response_data['continuationToken']) > 0):
+                user_continue_from = response_data['continuationToken']
+            for row in response_data['rows']:
+                item = row['rowData']
+                users.append(item['userId'])
+        if user_continue_from is None:
+            break
+
+    if users and stream.stream_alias is not None:
         body = None
         uri = "https://api.solarvista.com/calendar/v2/%s/appointments/search/%s" \
             % (CONFIG.get('account'), 'users')
@@ -223,7 +205,7 @@ def sync_appointment(stream, continue_from, userIds):
             "from": oneYearPast.isoformat(),
             "includeUnassigned": True,
             "to": oneYearFuture.isoformat(),
-            "userIds": userIds
+            "userIds": users
         }
         if continue_from is not None:
             query['continuationToken'] = continue_from

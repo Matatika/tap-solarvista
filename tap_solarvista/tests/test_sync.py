@@ -828,6 +828,12 @@ class TestSync(unittest.TestCase):
                 + "/datasources/ref/users/data/query",
             json=mock_user_data,
         )
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/datagateway/v3/mock-account-id"
+                + "/datasources/ref/users/data/query",
+            json=mock_user_data,
+        )
         mock_user_appointment_data = {
             "appointments": [
                 {
@@ -853,11 +859,11 @@ class TestSync(unittest.TestCase):
         )
 
         tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
-        self.assertEqual(len(responses.calls), 2,
-                         "Expecting 2 calls one to users and another to appointments")
-        self.assertEqual(responses.calls[1].request.url,
+        self.assertEqual(len(responses.calls), 3,
+                         "Expecting 3 calls 2 to users and 1 to appointments")
+        self.assertEqual(responses.calls[2].request.url,
                          "https://api.solarvista.com/calendar/v2/mock-account-id/appointments/search/users")
-        request_body = json.loads(responses.calls[1].request.body)
+        request_body = json.loads(responses.calls[2].request.body)
 
         oneYearPast = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
         oneYearFuture = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
