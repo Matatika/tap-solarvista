@@ -844,7 +844,7 @@ class TestSync(unittest.TestCase):
                     "label": "Leave/Holiday PM only",
                     "showAsHint": "foreground",
                     "start": "2021-02-26T12:45:00+00:00",
-                    "userId": "mock-user-id",
+                    "userId": "mock-user-id3",
                     "workExclusivity": "cannotOverlap",
                     "properties": {}
                 }
@@ -895,7 +895,7 @@ class TestSync(unittest.TestCase):
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
-
+        record_messages = sorted(record_messages, key=lambda k: k.asdict()['record']['userId']) 
         expected_records = [
             {'userId': "mock-user-id"},
             {'userId': "mock-user-id2"},
@@ -904,7 +904,7 @@ class TestSync(unittest.TestCase):
                 'start': "2021-02-26T12:45:00+00:00",
                 'end': "2021-02-26T17:30:00+00:00",
                 'label': "Leave/Holiday PM only",
-                'userId': "mock-user-id",
+                'userId': "mock-user-id3",
                 'displayColour': 4288988160,
                 'icon': 'bell',
                 'showAsHint': 'foreground',
