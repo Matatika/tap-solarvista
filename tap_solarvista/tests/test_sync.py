@@ -861,10 +861,13 @@ class TestSync(unittest.TestCase):
         tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
         self.assertEqual(len(responses.calls), 3,
                          "Expecting 3 calls 2 to users and 1 to appointments")
-        self.assertEqual(responses.calls[2].request.url,
+        appointments_response = next((call for call in responses.calls
+                    if call.request.url == "https://api.solarvista.com/calendar/v2/mock-account-id"
+                         + "/appointments/search/users"), None)
+        self.assertEqual(appointments_response.request.url,
                          "https://api.solarvista.com/calendar/v2/mock-account-id"
                          + "/appointments/search/users")
-        request_body = json.loads(responses.calls[2].request.body)
+        request_body = json.loads(appointments_response.request.body)
 
         one_year_past = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
         one_year_future = datetime.now() + dateutil.relativedelta.relativedelta(years=1)
