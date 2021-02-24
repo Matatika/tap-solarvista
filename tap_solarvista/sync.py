@@ -201,7 +201,7 @@ def sync_appointment(stream, continue_from):
         uri = "https://api.solarvista.com/calendar/v2/%s/appointments/search/%s" \
             % (CONFIG.get('account'), 'users')
         one_year_past = datetime.now() - relativedelta(years=1)
-        one_year_future = datetime.now() - relativedelta(years=1)
+        one_year_future = datetime.now() + relativedelta(years=1)
         query = {
             "from": one_year_past.isoformat(),
             "includeUnassigned": True,
@@ -290,7 +290,7 @@ def _fetch(method, headers, uri, body, refresh_auth):
             LOGGER.info("[%s] GET %s", str(res.status_code), uri)
             response = res
     elif method == "POST":
-        LOGGER.info("POST %s", uri)
+        LOGGER.info("POST %s %s", uri, body)
         with requests.post(uri,
                            data=body,
                            headers=headers) as res:

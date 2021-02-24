@@ -867,7 +867,7 @@ class TestSync(unittest.TestCase):
         request_body = json.loads(responses.calls[2].request.body)
 
         one_year_past = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
-        one_year_future = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
+        one_year_future = datetime.now() + dateutil.relativedelta.relativedelta(years=1)
         from_query = dateutil.parser.isoparse(request_body["from"])
         to_query = dateutil.parser.isoparse(request_body["to"])
 
