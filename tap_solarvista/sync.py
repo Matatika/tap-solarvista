@@ -68,8 +68,13 @@ def sync_all_data(config, state, catalog):
                                 flatten_json(merged)
                             )
                         else:
+                            item = row['rowData']
+                            merged = {}
+                            merged.update(item)
+                            if 'lastModified' in row:
+                                merged.update({ 'lastModified': row['lastModified'] })
                             tap_data.append(
-                                flatten_json(row['rowData'])
+                                flatten_json(merged)
                             )
                         counter.increment()
 

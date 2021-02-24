@@ -705,6 +705,7 @@ class TestSync(unittest.TestCase):
         project_data = {
             'continuationToken': 'moredata',
             'rows': [{
+                "lastModified": "2021-02-24T08:30:26+00:00",
                 "rowData": {
                     "reference": "75521249",
                     "project-type": "Repair",
@@ -723,8 +724,7 @@ class TestSync(unittest.TestCase):
                     "costs-expected": None,
                     "working-time-expected": None,
                     "travel-time-expected": None,
-                    "progress-percent": None,
-                    "last-update": "2021-02-09T11:45:23Z",
+                    "progress-percent": None
                 }
             }]
         }
@@ -757,7 +757,7 @@ class TestSync(unittest.TestCase):
             'working-time-expected': None,
             'travel-time-expected': None,
             'progress-percent': None,
-            'last-update': "2021-02-09T11:45:23Z",
+            'lastModified': "2021-02-24T08:30:26+00:00",
             }
         ]
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
