@@ -184,6 +184,7 @@ def sync_appointment(stream, continue_from):
                 "continuationToken": user_continue_from
             })
         response_data = fetch("POST", uri, body)
+        user_continue_from = None
         if response_data is not None:
             if ('continuationToken' in response_data
                     and response_data['continuationToken'] is not None
