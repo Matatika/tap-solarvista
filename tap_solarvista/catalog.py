@@ -26,6 +26,8 @@ def discover(selected_datasources):
             ]
 
         key_properties = ['reference']
+        if stream_id == 'appointment_stream':
+            key_properties = ['appointmentId']
         if stream_id == 'users_stream':
             key_properties = ['userId']
         if stream_id == 'workitemhistory_stream':
