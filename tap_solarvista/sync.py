@@ -181,7 +181,7 @@ def sync_appointment(stream, continue_from):
             % (CONFIG.get('account'), 'users')
         if user_continue_from is not None:
             body = json.dumps({
-                "continuationToken": continue_from
+                "continuationToken": user_continue_from
             })
         response_data = fetch("POST", uri, body)
         if response_data is not None:
