@@ -1,10 +1,10 @@
 """sync is responsible for http requests to target solarvista account"""
 #!/usr/bin/env python3
 import json
-import requests
-from urllib3.util import Retry
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import requests
+from urllib3.util import Retry
 import singer
 from tap_solarvista.timeout_http_adapter import TimeoutHttpAdapter
 
@@ -54,7 +54,6 @@ def sync_all_data(config, state, catalog):
                     response_data = sync_appointment(stream, continuation)
                 else:
                     response_data = sync_datasource(stream, continuation)
-                tap_data = []
                 continuation = None
                 if response_data is not None:
                     continuation = process_response_data(catalog, stream, counter, response_data)
@@ -63,6 +62,7 @@ def sync_all_data(config, state, catalog):
 
 
 def process_response_data(catalog, stream, counter, response_data):
+    """ Process and write the response data with 'rowData' and 'continuationToken' """
     tap_data = []
     continuation = None
     if response_data is not None:
@@ -199,12 +199,12 @@ def sync_appointment(stream, continue_from):
         body = None
         uri = "https://api.solarvista.com/calendar/v2/%s/appointments/search/%s" \
             % (CONFIG.get('account'), 'users')
-        oneYearPast = datetime.now() - relativedelta(years=1)
-        oneYearFuture = datetime.now() - relativedelta(years=1)
+        one_year_past = datetime.now() - relativedelta(years=1)
+        one_year_future = datetime.now() - relativedelta(years=1)
         query = {
-            "from": oneYearPast.isoformat(),
+            "from": one_year_past.isoformat(),
             "includeUnassigned": True,
-            "to": oneYearFuture.isoformat(),
+            "to": one_year_future.isoformat(),
             "userIds": users
         }
         if continue_from is not None:

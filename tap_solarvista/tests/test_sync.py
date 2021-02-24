@@ -5,11 +5,11 @@ try:
 except ImportError:
     from mock import patch
 import json
-import responses
-import singer
 from datetime import datetime
 import dateutil.relativedelta
 import dateutil.parser
+import responses
+import singer
 import tap_solarvista
 import tap_solarvista.tests.utils as test_utils
 from tap_solarvista import catalog
@@ -862,18 +862,19 @@ class TestSync(unittest.TestCase):
         self.assertEqual(len(responses.calls), 3,
                          "Expecting 3 calls 2 to users and 1 to appointments")
         self.assertEqual(responses.calls[2].request.url,
-                         "https://api.solarvista.com/calendar/v2/mock-account-id/appointments/search/users")
+                         "https://api.solarvista.com/calendar/v2/mock-account-id"
+                         + "/appointments/search/users")
         request_body = json.loads(responses.calls[2].request.body)
 
-        oneYearPast = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
-        oneYearFuture = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
-        fromQuery = dateutil.parser.isoparse(request_body["from"])
-        toQuery = dateutil.parser.isoparse(request_body["to"])
+        one_year_past = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
+        one_year_future = datetime.now() - dateutil.relativedelta.relativedelta(years=1)
+        from_query = dateutil.parser.isoparse(request_body["from"])
+        to_query = dateutil.parser.isoparse(request_body["to"])
 
-        self.assertEqual(fromQuery.replace(second=0, microsecond=0),
-            oneYearPast.replace(second=0, microsecond=0))
-        self.assertEqual(toQuery.replace(second=0, microsecond=0),
-            oneYearFuture.replace(second=0, microsecond=0))
+        self.assertEqual(from_query.replace(second=0, microsecond=0),
+            one_year_past.replace(second=0, microsecond=0))
+        self.assertEqual(to_query.replace(second=0, microsecond=0),
+            one_year_future.replace(second=0, microsecond=0))
         self.assertEqual(request_body["includeUnassigned"], True)
         self.assertEqual(request_body["userIds"], ["mock-user-id", "mock-user-id2"])
 
