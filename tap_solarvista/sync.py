@@ -285,12 +285,12 @@ def _fetch(method, headers, uri, body, refresh_auth):
     http.mount("https://", TimeoutHttpAdapter(max_retries=retries))
     response = None
     if method == "GET":
-        LOGGER.info("GET %s", uri)
+        LOGGER.debug("GET %s", uri)
         with requests.get(uri, headers=headers) as res:
             LOGGER.info("[%s] GET %s", str(res.status_code), uri)
             response = res
     elif method == "POST":
-        LOGGER.info("POST %s %s", uri, body)
+        LOGGER.debug("POST %s %s", uri, body)
         with requests.post(uri,
                            data=body,
                            headers=headers) as res:
