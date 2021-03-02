@@ -54,6 +54,9 @@
         "schedule_durationMinutes": {
             "type": ["null", "number"]
         },
+        "schedule_travelTimeMinutes": {
+            "type": ["null", "number"]
+        },
         "schedule_startTime": {
              "type": ["string"],
              "format": "date-time"
