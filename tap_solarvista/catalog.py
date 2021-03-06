@@ -15,7 +15,7 @@ def discover(selected_datasources):
         stream_id = stream_id.replace('-', '')
         stream_name = datasource.replace('-', '')
         stream_replication_key = None
-        stream_replication_method = None
+        stream_replication_method = 'FULL_TABLE'
         if stream_id == 'workitem_stream':
             stream_replication_key = "lastModified"
             stream_replication_method = "INCREMENTAL"

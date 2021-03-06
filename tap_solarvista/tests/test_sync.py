@@ -105,9 +105,10 @@ class TestSync(unittest.TestCase):
             json=mock_site_data,
         )
         tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
 
 
     @responses.activate  # intercept HTTP calls within this method
@@ -155,9 +156,10 @@ class TestSync(unittest.TestCase):
             json=mock_site_data,
         )
         tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
 
 
     @responses.activate  # intercept HTTP calls within this method
@@ -193,7 +195,7 @@ class TestSync(unittest.TestCase):
         self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
         self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
                 + "/mock-account-id/datasources/ref/site/data/query", 1))
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
 
         # a second call should reuse the access_token
         responses.add(
@@ -207,11 +209,13 @@ class TestSync(unittest.TestCase):
         self.assertTrue(responses.assert_call_count("https://auth.solarvista.com/connect/token", 1))
         self.assertTrue(responses.assert_call_count("https://api.solarvista.com/datagateway/v3"
                 + "/mock-account-id/datasources/ref/site/data/query", 2))
-        self.assertEqual(len(SINGER_MESSAGES), 4)
+        self.assertEqual(len(SINGER_MESSAGES), 6)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[2], singer.SchemaMessage)
-        self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[4], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[5], singer.StateMessage)
 
 
     @patch('tap_solarvista.sync.sync_datasource')
@@ -233,9 +237,10 @@ class TestSync(unittest.TestCase):
 
         tap_solarvista.sync.sync_all_data({}, state, self.catalog)
 
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
@@ -494,12 +499,11 @@ class TestSync(unittest.TestCase):
         self.assertEqual(request_body["orderBy"], "lastModified")
         self.assertEqual(request_body["orderByDirection"], "ascending")
 
-        self.assertEqual(len(SINGER_MESSAGES), 5)
+        self.assertEqual(len(SINGER_MESSAGES), 4)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
-        self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[4], singer.StateMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.StateMessage)
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
@@ -593,12 +597,14 @@ class TestSync(unittest.TestCase):
         self.assertEqual(len(responses.calls), 2,
                          "Expecting 2 calls one to search another to history")
 
-        self.assertEqual(len(SINGER_MESSAGES), 5)
+        self.assertEqual(len(SINGER_MESSAGES), 7)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
         self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[4], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[4], singer.StateMessage)
+        self.assertIsInstance(SINGER_MESSAGES[5], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[6], singer.StateMessage)
 
         schema_messages = list(filter(
             lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
@@ -675,9 +681,10 @@ class TestSync(unittest.TestCase):
 
         tap_solarvista.sync.sync_all_data({}, state, self.catalog)
 
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
@@ -736,9 +743,10 @@ class TestSync(unittest.TestCase):
 
         tap_solarvista.sync.sync_all_data({}, state, self.catalog)
 
-        self.assertEqual(len(SINGER_MESSAGES), 2)
+        self.assertEqual(len(SINGER_MESSAGES), 3)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
 
         record_messages = list(filter(
             lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
@@ -789,10 +797,11 @@ class TestSync(unittest.TestCase):
         mock_fetch_data.side_effect = [mock_data, None]
 
         tap_solarvista.sync.sync_all_data({}, state, self.catalog)
-        self.assertEqual(len(SINGER_MESSAGES), 3)
+        self.assertEqual(len(SINGER_MESSAGES), 4)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
         self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.StateMessage)
         self.assertEqual(len(SINGER_METRICS), 1)
         metric_message = SINGER_METRICS[0]
         self.assertIsInstance(metric_message, singer.metrics.Point)
@@ -881,13 +890,14 @@ class TestSync(unittest.TestCase):
         self.assertEqual(request_body["includeUnassigned"], True)
         self.assertEqual(request_body["userIds"], ["mock-user-id", "mock-user-id2"])
 
-        self.assertEqual(len(SINGER_MESSAGES), 5)
+        self.assertEqual(len(SINGER_MESSAGES), 7)
         self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[1], singer.SchemaMessage)
         self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
         self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[4], singer.RecordMessage)
-
+        self.assertIsInstance(SINGER_MESSAGES[4], singer.StateMessage)
+        self.assertIsInstance(SINGER_MESSAGES[5], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[6], singer.StateMessage)
         schema_messages = list(filter(
             lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
         self.assertEqual(sorted(['users_stream', 'appointment_stream']),

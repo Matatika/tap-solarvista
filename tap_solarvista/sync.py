@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 import requests
 from urllib3.util import Retry
 import singer
+from singer import Transformer, utils, metadata
 from tap_solarvista.timeout_http_adapter import TimeoutHttpAdapter
 
 LOGGER = singer.get_logger()
@@ -25,6 +26,7 @@ def sync_all_data(config, state, catalog):
     """ Sync data from tap source """
     CONFIG.update(config)
     LOGGER.info("CONFIG [%s]", CONFIG)
+    LOGGER.info("state arg [%s]", state)
     STATE.update(state)
     LOGGER.info("STATE [%s]", STATE)
 
@@ -287,14 +289,14 @@ def _fetch(method, headers, uri, body, refresh_auth):
     if method == "GET":
         LOGGER.debug("GET %s", uri)
         with requests.get(uri, headers=headers) as res:
-            LOGGER.info("[%s] GET %s", str(res.status_code), uri)
+            LOGGER.debug("[%s] GET %s", str(res.status_code), uri)
             response = res
     elif method == "POST":
         LOGGER.debug("POST %s %s", uri, body)
         with requests.post(uri,
                            data=body,
                            headers=headers) as res:
-            LOGGER.info("[%s] POST %s", str(res.status_code), uri)
+            LOGGER.debug("[%s] POST %s", str(res.status_code), uri)
             response = res
     if response is not None and refresh_auth and response.status_code == 401:
         LOGGER.error("[%s] token expired %s", str(response.status_code), uri)
@@ -343,6 +345,7 @@ def flatten_json(unformated_json):
 def write_data(stream, tap_data):
     """ Write the fetched data to singer records and update state """
     bookmark_column = stream.replication_key
+    state_key = stream.tap_stream_id
     is_sorted = True  # indicate whether data is sorted ascending on bookmark value
     max_bookmark = None
     for row in tap_data:
@@ -352,7 +355,7 @@ def write_data(stream, tap_data):
             if row.get(bookmark_column):
                 if is_sorted:
                     # update bookmark to latest value
-                    singer.write_state({stream.tap_stream_id: row[bookmark_column]})
+                    utils.update_state(STATE, state_key, row[bookmark_column])
                 else:
                     # if data unsorted, save max value until end of writes
                     max_bookmark = max(max_bookmark, row[bookmark_column])
@@ -361,4 +364,6 @@ def write_data(stream, tap_data):
                              stream.tap_stream_id, bookmark_column)
 
     if bookmark_column and not is_sorted:
-        singer.write_state({stream.tap_stream_id: max_bookmark})
+        utils.update_state(STATE, state_key, max_bookmark)
+    LOGGER.info("Writing state [%s]", STATE)
+    singer.write_state(STATE)
