@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 import requests
 from urllib3.util import Retry
 import singer
-from singer import Transformer, utils, metadata
+from singer import utils
 from tap_solarvista.timeout_http_adapter import TimeoutHttpAdapter
 
 LOGGER = singer.get_logger()
