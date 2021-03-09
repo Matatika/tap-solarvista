@@ -891,13 +891,6 @@ class TestSync(unittest.TestCase):
         self.assertEqual(request_body["userIds"], ["mock-user-id", "mock-user-id2"])
 
         self.assertEqual(len(SINGER_MESSAGES), 7)
-        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
-        self.assertIsInstance(SINGER_MESSAGES[1], singer.SchemaMessage)
-        self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[3], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[4], singer.StateMessage)
-        self.assertIsInstance(SINGER_MESSAGES[5], singer.RecordMessage)
-        self.assertIsInstance(SINGER_MESSAGES[6], singer.StateMessage)
         schema_messages = list(filter(
             lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
         self.assertEqual(sorted(['users_stream', 'appointment_stream']),
