@@ -7,7 +7,10 @@
             "type": ["string"]
         },
         "description": {
-            "type": ["string"]
+            "type": ["null", "string"]
+        },
+        "users": {
+            "type": ["array"]
         }
     }
 }
