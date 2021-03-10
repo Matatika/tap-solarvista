@@ -923,5 +923,56 @@ class TestSync(unittest.TestCase):
         ]
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
+    @patch('tap_solarvista.sync.sync_datasource')
+    def test_sync_skill(self, mock_fetch):
+        """ Test sync skill """
+
+        state = {}
+
+        skill_data = {
+            'rows': [{
+                "rowData": {
+                    "reference": 1,
+                    "name": "Reactive",
+                    "description": None,
+                    "users": [
+                        {
+                        "id": "f0a5a5f0",
+                        "title": "Firstname Lastname",
+                        "subtitle": "Firstname.Lastname@city-holdings.co.uk"
+                        }
+                    ]
+                }
+            }]
+        }
+
+        mock_fetch.side_effect = [skill_data, None]
+
+        tap_solarvista.sync.sync_all_data({}, state, self.catalog)
+
+        self.assertEqual(len(SINGER_MESSAGES), 3)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.StateMessage)
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [{
+            "reference": 1,
+            "name": "Reactive",
+            "description": None,
+            "users": [
+                {
+                "id": "f0a5a5f0",
+                "title": "Firstname Lastname",
+                "subtitle": "Firstname.Lastname@city-holdings.co.uk"
+                }
+            ]
+        }]
+
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
+
 if __name__ == '__main__':
     unittest.main()
