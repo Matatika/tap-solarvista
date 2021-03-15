@@ -543,7 +543,8 @@ class TestSync(unittest.TestCase):
 
         mock_workitem_data = {
             'items': [{
-                "workItemId": "mock-workitem-id"
+                "workItemId": "mock-workitem-id",
+                "lastModified": "2020-12-01T12:26:21.1250844+00:00"
             }]
         }
         responses.add(
@@ -619,7 +620,8 @@ class TestSync(unittest.TestCase):
                 'workItemId': "mock-workitem-id",
                 'workflowId': "74f6d038-a676-48dd-ac3a-a052907d9570",
                 'stage_stageDisplayName': "Unassigned",
-                'stage_stageType': "Unassigned"
+                'stage_stageType': "Unassigned",
+                'lastModified': "2020-12-01T12:26:21.1250844+00:00",
             },
             {'workItemHistoryId': "mock-workitem-id_1",
                 'workItemId': "mock-workitem-id",
@@ -639,9 +641,13 @@ class TestSync(unittest.TestCase):
                 'stage_transition_transitionedBy_email': "another@mock.com",
                 'stage_transition_transitionedBy_userId': "9119e52d-95d9-4757-9657-99ed383f6bc5",
                 'stage_transition_transitionId': "6adc63f9-f860-4d9d-bbd5-628bf456fc8f",
-                'stage_transition_violatesStageExclusivity': False
+                'stage_transition_violatesStageExclusivity': False,
+                'lastModified': "2020-12-01T15:28:21.5350844+00:00",
             },
-            {'workItemId': "mock-workitem-id"}
+            {
+                'workItemId': "mock-workitem-id",
+                'lastModified': "2020-12-01T12:26:21.1250844+00:00"
+            }
         ]
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
