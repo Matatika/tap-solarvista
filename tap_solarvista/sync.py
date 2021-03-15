@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 import requests
 from urllib3.util import Retry
 import singer
-from singer import Transformer, utils, metadata
+from singer import utils
 from tap_solarvista.timeout_http_adapter import TimeoutHttpAdapter
 
 LOGGER = singer.get_logger()
@@ -79,7 +79,10 @@ def process_response_data(catalog, stream, counter, response_data):
                 merged.update(item)
                 if CONFIG.get('workitem_detail_enabled') is not None:
                     merged.update(fetch_workitemdetail(item['workItemId']))
-                sync_workitemhistory(catalog, item['workItemId'])
+                last_modified = None
+                if 'lastModified' in item:
+                    last_modified = item['lastModified']
+                sync_workitemhistory(catalog, item['workItemId'], last_modified)
                 tap_data.append(
                     flatten_json(merged)
                 )
@@ -217,7 +220,7 @@ def sync_appointment(stream, continue_from):
         return transform_appointments_to_look_like_rowdata(response_data)
     return None
 
-def sync_workitemhistory(catalog, workitem_id):
+def sync_workitemhistory(catalog, workitem_id, last_modified):
     """ Sync data from work item history """
     if workitem_id is not None:
         workitem_history_stream = catalog.get_stream('workitemhistory_stream')
@@ -229,7 +232,15 @@ def sync_workitemhistory(catalog, workitem_id):
                 if history_rows.get('rows'):
                     tap_data = []
                     for history_row in history_rows['rows']:
-                        tap_data.append(history_row['rowData'])
+                        history_item = history_row['rowData']
+                        history_item['lastModified'] = last_modified
+                        if 'stage_transition_receivedAt' in history_item:
+                            history_item['lastModified'] = \
+                                history_item['stage_transition_receivedAt']
+                        if 'stage_transition_transitionedAt' in history_item:
+                            history_item['lastModified'] = \
+                                history_item['stage_transition_transitionedAt']
+                        tap_data.append(history_item)
                         counter.increment()
                     write_data(workitem_history_stream, tap_data)
 

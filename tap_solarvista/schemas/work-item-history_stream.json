@@ -9,6 +9,10 @@
         "workflowId": {
             "type": ["null", "string"]
         },
+        "lastModified": {
+             "type": ["string"],
+             "format": "date-time"
+        },
         "stage_assignedUser_displayName": {
             "type": ["null", "string"]
         },
