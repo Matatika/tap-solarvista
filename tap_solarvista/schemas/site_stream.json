@@ -4,19 +4,19 @@
             "type": ["string"]
         },
         "nickname": {
-            "type": ["string"]
+            "type": ["null", "string"]
         },
         "name": {
-            "type": ["string"]
+            "type": ["null", "string"]
         },
         "floor-room": {
-            "type": ["string"]
+            "type": ["null", "string"]
         },
         "building": {
-            "type": ["string"]
+            "type": ["null", "string"]
         },
         "address_postalCode": {
-            "type": ["string"]
+            "type": ["null", "string"]
         },
         "status": {
             "type": ["string"]
