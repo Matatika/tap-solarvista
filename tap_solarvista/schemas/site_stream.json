@@ -38,6 +38,12 @@
         },
         "territory_id": {
             "type": ["null", "string"]        
+        },
+        "hb-region": {
+            "type": ["null", "string"]        
+        },
+        "hb-area": {
+            "type": ["null", "string"]        
         }
     }
 }
