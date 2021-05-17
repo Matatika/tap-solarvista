@@ -1016,6 +1016,97 @@ class TestSync(unittest.TestCase):
 
         self.assertEqual(expected_records, result)
 
+    @responses.activate
+    def test_sync_activities(self):
+        """ Test sync activities """
+
+        self.catalog = catalog.discover(['work-item', 'activities'])
+
+        mock_state = {}
+
+        mock_config = {
+            'account': 'mock-account-id',
+            'personal_access_token': "mock-token", # disables get_access_token call
+            'workitem_detail_enabled': None,
+            'start_date': "2020-05-14T14:14:14.455852+00:00"
+        }
+
+        mock_workitem_data = {
+            'items': [{
+                "workItemId": "cf3b5e1d-a582-4a52-ac26-f72233c44c40",
+                "lastModified": "2020-12-01T12:26:21.1250844+00:00"
+            }]
+        }
+        responses.add(
+            responses.POST,
+            "https://api.solarvista.com/workflow/v4/mock-account-id"
+                + "/workItems/search",
+            json=mock_workitem_data,
+        )
+
+        mock_activities_data = [
+            {
+                "actvivityId": "1",
+                "contextProperties": {
+                    "stageType": "TravellingFrom",
+                    "ref": "56967",
+                    "visitId": "cf3b5e1d-a582-4a52-ac26-f72233c44c40"
+                },
+                "createdBy": "f12a4565-4dd4-45bb-9189-dfb603e9b938",
+                "createdOn": "2021-05-10T16:24:03.949878Z",
+                "data": {
+                "linkedWorkOrder": "77369110",
+                "internalComments": "a comment"
+                }
+            }
+        ]
+
+        responses.add(
+            responses.GET,
+            "https://api.solarvista.com/activity/v2/mock-account-id"
+                + "/activities/context/cf3b5e1d-a582-4a52-ac26-f72233c44c40",
+            json=mock_activities_data,
+        )
+
+        tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
+        self.assertEqual(len(responses.calls), 2,
+                         "Expecting 2 calls one to search another to history")
+
+        self.assertEqual(len(SINGER_MESSAGES), 6)
+        self.assertIsInstance(SINGER_MESSAGES[0], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[1], singer.SchemaMessage)
+        self.assertIsInstance(SINGER_MESSAGES[2], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[3], singer.StateMessage)
+        self.assertIsInstance(SINGER_MESSAGES[4], singer.RecordMessage)
+        self.assertIsInstance(SINGER_MESSAGES[5], singer.StateMessage)
+
+        schema_messages = list(filter(
+            lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
+        self.assertEqual(sorted(['workitem_stream', 'activities_stream']),
+                            sorted([x.asdict()['stream'] for x in schema_messages]))
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = [
+            {
+                "actvivityId": "1",
+                "contextProperties_stageType": "TravellingFrom",
+                "contextProperties_ref": "56967",
+                "contextProperties_visitId": "cf3b5e1d-a582-4a52-ac26-f72233c44c40",
+                "createdBy": "f12a4565-4dd4-45bb-9189-dfb603e9b938",
+                "createdOn": "2021-05-10T16:24:03.949878Z",
+                "data_linkedWorkOrder": "77369110",
+                "data_internalComments": "a comment"
+            },
+            {
+                "workItemId": "cf3b5e1d-a582-4a52-ac26-f72233c44c40",
+                "lastModified": "2020-12-01T12:26:21.1250844+00:00"
+            }
+        ]
+
+        self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
 
 if __name__ == '__main__':
     unittest.main()
