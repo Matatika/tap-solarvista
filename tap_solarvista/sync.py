@@ -269,7 +269,7 @@ def sync_activities(catalog, workitem_id):
         activities_stream = catalog.get_stream('activities_stream')
         if activities_stream and activities_stream.is_selected():
             with singer.metrics.record_counter(activities_stream.tap_stream_id) as counter:
-                uri = " https://api.solarvista.com/activity/v2/%s/activities/context/%s" \
+                uri = "https://api.solarvista.com/activity/v2/%s/activities/context/%s" \
             % (CONFIG.get('account'), workitem_id)
             activities_rows = transform_activities_to_look_like_rowdata(fetch("GET", uri, None))
             if activities_rows is not None:
