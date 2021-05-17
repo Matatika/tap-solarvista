@@ -3,7 +3,8 @@ import unittest
 try:
     from unittest.mock import patch
 except ImportError:
-    from mock import patch
+    #from mock import patch
+    pass
 import json
 from datetime import datetime
 import dateutil.relativedelta
@@ -971,6 +972,49 @@ class TestSync(unittest.TestCase):
         }]
 
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
+
+
+    def test_transform_activities(self):
+        """ Test transform of activities """
+
+        activities_data = [
+            {
+                "actvivityId": "1",
+                "contextProperties": {
+                    "stageType": "TravellingFrom",
+                    "ref": "56967",
+                    "visitId": "cf3b5e1d-a582-4a52-ac26-f72233c44c40"
+                },
+                "createdBy": "f12a4565-4dd4-45bb-9189-dfb603e9b938",
+                "createdOn": "2021-05-10T16:24:03.949878Z",
+                "data": {
+                "linkedWorkOrder": "77369110",
+                "internalComments": "a comment"
+                }
+            }
+        ]
+        
+        result = tap_solarvista.sync.transform_activities_to_look_like_rowdata(activities_data)
+
+        record_messages = list(filter(
+            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+
+        expected_records = {'rows': [{ "rowData": {
+                "actvivityId": "1",
+                "contextProperties": {
+                    "stageType": "TravellingFrom",
+                    "ref": "56967",
+                    "visitId": "cf3b5e1d-a582-4a52-ac26-f72233c44c40"
+                },
+                "createdBy": "f12a4565-4dd4-45bb-9189-dfb603e9b938",
+                "createdOn": "2021-05-10T16:24:03.949878Z",
+                "data": {
+                    "linkedWorkOrder": "77369110",
+                    "internalComments": "a comment"
+                }
+        }}]}        
+
+        self.assertEqual(expected_records, result)
 
 
 if __name__ == '__main__':
