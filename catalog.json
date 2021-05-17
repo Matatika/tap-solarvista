@@ -260,6 +260,42 @@
           }
         }
       }
+    }, 
+    {
+      "stream": "activities", 
+      "tap_stream_id": "activities_stream", 
+      "key_properties": [], 
+      "stream_alias": "activities", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
+            "activityId": {
+                "type": ["null", "string"]
+            },
+            "contextProperties_stageType": {
+                "type": ["null", "string"]
+            },
+            "contextProperties_ref": {
+                "type": ["null", "string"]
+            },
+            "contextProperties_visitId": {
+                "type": ["null", "string"]
+            },
+            "createdBy": {
+                "type": ["null", "string"]
+            },
+            "createdOn": {
+                 "type": ["null", "string"],
+                 "format": "date-time"
+            },
+            "data_linkedWorkOrder": {
+                 "type": ["null", "string"]
+            },
+            "data_internalComments": {
+                 "type": ["null", "string"]
+            }
+        }
+    }
     }
   ]
 }
