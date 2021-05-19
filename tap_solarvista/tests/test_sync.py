@@ -1,10 +1,11 @@
+# pylint: disable=too-many-lines
 """ Test sync package """
 import unittest
 try:
     from unittest.mock import patch
 except ImportError:
     #from mock import patch
-    pass
+    from mock import patch
 import json
 from datetime import datetime
 import dateutil.relativedelta
