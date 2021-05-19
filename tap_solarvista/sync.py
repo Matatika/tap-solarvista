@@ -2,7 +2,6 @@
 #!/usr/bin/env python3
 import json
 from datetime import datetime
-from typing import List
 from dateutil.relativedelta import relativedelta
 import requests
 from urllib3.util import Retry
@@ -45,7 +44,7 @@ def sync_all_data(config, state, catalog):
         # workitemhistory will sync on each work item
         if stream.tap_stream_id == 'workitemhistory_stream':
             continue
-        elif stream.tap_stream_id == 'activities_stream':
+        if stream.tap_stream_id == 'activity_stream':
             continue
         LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
         continuation = None
@@ -86,7 +85,7 @@ def process_response_data(catalog, stream, counter, response_data):
                 if 'lastModified' in item:
                     last_modified = item['lastModified']
                 sync_workitemhistory(catalog, item['workItemId'], last_modified)
-                sync_activities(catalog, item['workItemId'])
+                sync_activity(catalog, item['workItemId'])
                 tap_data.append(
                     flatten_json(merged)
                 )
@@ -152,8 +151,8 @@ def transform_search_to_look_like_rowdata(response_data):
     return new_data
 
 
-def transform_activities_to_look_like_rowdata(response_data):
-    """ transform the activities results, so we can reuse the sync loop """
+def transform_activity_to_look_like_rowdata(response_data):
+    """ transform the activity results, so we can reuse the sync loop """
     if response_data is None:
         return None
     new_data = {}
@@ -263,23 +262,23 @@ def sync_workitemhistory(catalog, workitem_id, last_modified):
                         counter.increment()
                     write_data(workitem_history_stream, tap_data)
 
-def sync_activities(catalog, workitem_id):
-    """ Sync data from activities """
+def sync_activity(catalog, workitem_id):
+    """ Sync data from activity """
     if workitem_id is not None:
-        activities_stream = catalog.get_stream('activities_stream')
-        if activities_stream and activities_stream.is_selected():
-            with singer.metrics.record_counter(activities_stream.tap_stream_id) as counter:
+        activity_stream = catalog.get_stream('activity_stream')
+        if activity_stream and activity_stream.is_selected():
+            with singer.metrics.record_counter(activity_stream.tap_stream_id) as counter:
                 uri = "https://api.solarvista.com/activity/v2/%s/activities/context/%s" \
             % (CONFIG.get('account'), workitem_id)
-            activities_rows = transform_activities_to_look_like_rowdata(fetch("GET", uri, None))
-            if activities_rows is not None:
-                if activities_rows.get('rows'):
+            activity_rows = transform_activity_to_look_like_rowdata(fetch("GET", uri, None))
+            if activity_rows is not None:
+                if activity_rows.get('rows'):
                     tap_data = []
-                    for activities_row in activities_rows['rows']:
-                        activities_item = activities_row['rowData']
-                        tap_data.append(flatten_json(activities_item))
+                    for activity_row in activity_rows['rows']:
+                        activity_item = activity_row['rowData']
+                        tap_data.append(flatten_json(activity_item))
                         counter.increment()
-                    write_data(activities_stream, tap_data)
+                    write_data(activity_stream, tap_data)
 
 def fetch_workitemdetail(workitem_id):
     """ Fetch workitem detail """
@@ -415,5 +414,3 @@ def write_data(stream, tap_data):
         utils.update_state(STATE, state_key, max_bookmark)
     LOGGER.info("Writing state [%s]", STATE)
     singer.write_state(STATE)
-
-

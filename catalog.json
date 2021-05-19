@@ -262,10 +262,10 @@
       }
     }, 
     {
-      "stream": "activities", 
-      "tap_stream_id": "activities_stream", 
+      "stream": "activity", 
+      "tap_stream_id": "activity_stream", 
       "key_properties": [], 
-      "stream_alias": "activities", 
+      "stream_alias": "activity", 
       "metadata": [], 
       "schema": {
         "properties": {

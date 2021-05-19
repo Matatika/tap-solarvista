@@ -974,10 +974,10 @@ class TestSync(unittest.TestCase):
         self.assertEqual(expected_records, [x.asdict()['record'] for x in record_messages])
 
 
-    def test_transform_activities(self):
-        """ Test transform of activities """
+    def test_transform_activity(self):
+        """ Test transform of activity """
 
-        activities_data = [
+        activity_data = [
             {
                 "actvivityId": "1",
                 "contextProperties": {
@@ -993,11 +993,8 @@ class TestSync(unittest.TestCase):
                 }
             }
         ]
-        
-        result = tap_solarvista.sync.transform_activities_to_look_like_rowdata(activities_data)
 
-        record_messages = list(filter(
-            lambda m: isinstance(m, singer.RecordMessage), SINGER_MESSAGES))
+        result = tap_solarvista.sync.transform_activity_to_look_like_rowdata(activity_data)
 
         expected_records = {'rows': [{ "rowData": {
                 "actvivityId": "1",
@@ -1012,15 +1009,15 @@ class TestSync(unittest.TestCase):
                     "linkedWorkOrder": "77369110",
                     "internalComments": "a comment"
                 }
-        }}]}        
+        }}]}
 
         self.assertEqual(expected_records, result)
 
     @responses.activate
-    def test_sync_activities(self):
-        """ Test sync activities """
+    def test_sync_activity(self):
+        """ Test sync activity """
 
-        self.catalog = catalog.discover(['work-item', 'activities'])
+        self.catalog = catalog.discover(['work-item', 'activity'])
 
         mock_state = {}
 
@@ -1044,7 +1041,7 @@ class TestSync(unittest.TestCase):
             json=mock_workitem_data,
         )
 
-        mock_activities_data = [
+        mock_activity_data = [
             {
                 "actvivityId": "1",
                 "contextProperties": {
@@ -1065,7 +1062,7 @@ class TestSync(unittest.TestCase):
             responses.GET,
             "https://api.solarvista.com/activity/v2/mock-account-id"
                 + "/activities/context/cf3b5e1d-a582-4a52-ac26-f72233c44c40",
-            json=mock_activities_data,
+            json=mock_activity_data,
         )
 
         tap_solarvista.sync.sync_all_data(mock_config, mock_state, self.catalog)
@@ -1082,7 +1079,7 @@ class TestSync(unittest.TestCase):
 
         schema_messages = list(filter(
             lambda m: isinstance(m, singer.SchemaMessage), SINGER_MESSAGES))
-        self.assertEqual(sorted(['workitem_stream', 'activities_stream']),
+        self.assertEqual(sorted(['workitem_stream', 'activity_stream']),
                             sorted([x.asdict()['stream'] for x in schema_messages]))
 
         record_messages = list(filter(

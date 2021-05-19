@@ -19,8 +19,8 @@ class TestCatalog(unittest.TestCase):
                            "Expect catalog to discover when no datasources supplied")
         selected_stream_ids = [s.tap_stream_id for s in local_catalog.streams]
         self.assertEqual(sorted(selected_stream_ids),
-                        [   
-                            'activities_stream',
+                        [
+                            'activity_stream',
                             'appointment_stream',
                             'customer_stream',
                             'equipment_stream',
