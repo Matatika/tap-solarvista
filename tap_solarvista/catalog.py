@@ -32,6 +32,8 @@ def discover(selected_datasources):
             key_properties = ['userId']
         if stream_id == 'workitemhistory_stream':
             key_properties = ['workItemHistoryId']
+        if stream_id == 'activity_stream':
+            key_properties = ['activityId']
 
         streams.append(
             CatalogEntry(

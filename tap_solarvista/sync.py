@@ -44,6 +44,8 @@ def sync_all_data(config, state, catalog):
         # workitemhistory will sync on each work item
         if stream.tap_stream_id == 'workitemhistory_stream':
             continue
+        if stream.tap_stream_id == 'activity_stream':
+            continue
         LOGGER.info("Syncing stream:%s", stream.tap_stream_id)
         continuation = None
         with singer.metrics.record_counter(stream.tap_stream_id) as counter:
@@ -83,6 +85,7 @@ def process_response_data(catalog, stream, counter, response_data):
                 if 'lastModified' in item:
                     last_modified = item['lastModified']
                 sync_workitemhistory(catalog, item['workItemId'], last_modified)
+                sync_activity(catalog, item['workItemId'])
                 tap_data.append(
                     flatten_json(merged)
                 )
@@ -144,6 +147,21 @@ def transform_search_to_look_like_rowdata(response_data):
             if item.get("fieldValues"):
                 item["properties"] = item.pop("fieldValues")
             rows.append({ "rowData": item})
+    new_data['rows'] = rows
+    return new_data
+
+
+def transform_activity_to_look_like_rowdata(response_data):
+    """ transform the activity results, so we can reuse the sync loop """
+    if response_data is None:
+        return None
+    new_data = {}
+
+    rows = []
+    for item in response_data:
+        if item.get("fieldValues"):
+            item["properties"] = item.pop("fieldValues")
+        rows.append({ "rowData": item})
     new_data['rows'] = rows
     return new_data
 
@@ -243,6 +261,24 @@ def sync_workitemhistory(catalog, workitem_id, last_modified):
                         tap_data.append(history_item)
                         counter.increment()
                     write_data(workitem_history_stream, tap_data)
+
+def sync_activity(catalog, workitem_id):
+    """ Sync data from activity """
+    if workitem_id is not None:
+        activity_stream = catalog.get_stream('activity_stream')
+        if activity_stream and activity_stream.is_selected():
+            with singer.metrics.record_counter(activity_stream.tap_stream_id) as counter:
+                uri = "https://api.solarvista.com/activity/v2/%s/activities/context/%s" \
+            % (CONFIG.get('account'), workitem_id)
+            activity_rows = transform_activity_to_look_like_rowdata(fetch("GET", uri, None))
+            if activity_rows is not None:
+                if activity_rows.get('rows'):
+                    tap_data = []
+                    for activity_row in activity_rows['rows']:
+                        activity_item = activity_row['rowData']
+                        tap_data.append(flatten_json(activity_item))
+                        counter.increment()
+                    write_data(activity_stream, tap_data)
 
 def fetch_workitemdetail(workitem_id):
     """ Fetch workitem detail """
