@@ -20,6 +20,7 @@ class TestCatalog(unittest.TestCase):
         selected_stream_ids = [s.tap_stream_id for s in local_catalog.streams]
         self.assertEqual(sorted(selected_stream_ids),
                         [
+                            'activity_stream',
                             'appointment_stream',
                             'customer_stream',
                             'equipment_stream',
