@@ -118,6 +118,9 @@
         },
         "workitemcreated": {
             "type": ["null", "boolean"]
+        },
+        "etc": {
+            "type": ["null", "boolean"]
         }
     }
 }
