@@ -1,6 +1,6 @@
 """ Utilities used in this module """
 import tap_solarvista
-import tap_solarvista.schemas as schemas
+from tap_solarvista import schemas
 
 def discover_catalog(datasource):
     """ Return a catalog with the supplied datasources updated with singer 'selected' metadata """
