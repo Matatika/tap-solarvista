@@ -5,8 +5,8 @@ import pkg_resources
 import singer
 from singer import utils
 
-import tap_solarvista.catalog as catalog
-import tap_solarvista.sync as sync
+from tap_solarvista.catalog import catalog
+from tap_solarvista.sync import sync
 
 REQUIRED_CONFIG_KEYS = ["start_date", "clientId", "code", "account"]
 LOGGER = singer.get_logger()
