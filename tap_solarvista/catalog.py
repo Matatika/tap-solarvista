@@ -1,7 +1,7 @@
 """catalog is responsible for inspecting which streams the target solarvista account supports."""
 #!/usr/bin/env python3
 from singer.catalog import Catalog, CatalogEntry
-from tap_solarvista.schemas import schemas
+from tap_solarvista import schemas
 
 def discover(selected_datasources):
     """Discover the streams this module can sync."""
