@@ -1,0 +1,49 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["string"]
+        },
+        "nickname": {
+            "type": ["null", "string"]
+        },
+        "name": {
+            "type": ["null", "string"]
+        },
+        "floor-room": {
+            "type": ["null", "string"]
+        },
+        "building": {
+            "type": ["null", "string"]
+        },
+        "address_postalCode": {
+            "type": ["null", "string"]
+        },
+        "status": {
+            "type": ["string"]
+        },
+        "latitude": {
+            "type": ["null", "string"]        
+        },
+        "longitude": {
+            "type": ["null", "string"]        
+        },
+        "customer_id": {
+            "type": ["null", "string"]        
+        },
+        "time-zone_id": {
+            "type": ["null", "string"]        
+        },
+        "category_id": {
+            "type": ["null", "string"]        
+        },
+        "territory_id": {
+            "type": ["null", "string"]        
+        },
+        "hb-region": {
+            "type": ["null", "string"]        
+        },
+        "hb-area": {
+            "type": ["null", "string"]        
+        }
+    }
+}

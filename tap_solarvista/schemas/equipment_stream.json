@@ -1,0 +1,22 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["string"]
+        },
+        "description": {
+            "type": ["string"]
+        },
+        "location": {
+            "type": ["string"]
+        },
+        "category_id": {
+            "type": ["null", "string"]        
+        },
+        "category_title": {
+            "type": ["null", "string"]        
+        },
+        "asset-number": {
+            "type": ["null", "string"]        
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["string"]
+        },
+        "nickname": {
+            "type": ["string"]
+        },
+        "name": {
+            "type": ["string"]
+        },
+        "status": {
+            "type": ["string"]
+        },
+        "terms-days": {
+            "type": ["null", "number"]
+        }
+    }
+}

@@ -1,0 +1,301 @@
+{
+  "streams": [
+    {
+      "stream": "workitem", 
+      "tap_stream_id": "workitem_stream", 
+      "key_properties": [], 
+      "stream_alias": "work-item", 
+      "metadata": [
+        {
+          "breadcrumb": [], 
+          "metadata": {
+            "selected": true
+          }
+        }
+      ], 
+      "schema": {
+        "properties": {
+          "properties_price-inc-tax": {
+            "type": [
+              "null", 
+              "boolean"
+            ]
+          }, 
+          "properties_site_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_customer_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_equipment_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "reference": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "tags": {
+            "type": [
+              "null", 
+              "array"
+            ]
+          }, 
+          "properties_currency_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "currentWorkflowStageDisplayName": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "workItemId": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "workItemTemplateId": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_duration-hours": {
+            "type": [
+              "null", 
+              "number"
+            ]
+          }, 
+          "assignedUserName": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "workItemTemplateDisplayName": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_problem_id": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "currentWorkflowStageType": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "properties_charge": {
+            "type": [
+              "null", 
+              "number"
+            ]
+          }, 
+          "assignedUserId": {
+            "type": [
+              "null", 
+              "string"
+            ]
+          }, 
+          "createdOn": {
+            "type": [
+              "string"
+            ], 
+            "format": "date-time"
+          }
+        }
+      }
+    }, 
+    {
+      "stream": "customer", 
+      "tap_stream_id": "customer_stream", 
+      "key_properties": [], 
+      "stream_alias": "customer", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
+          "status": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "terms-days": {
+            "type": [
+              "null", 
+              "number"
+            ]
+          }, 
+          "nickname": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "name": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "reference": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      }
+    }, 
+    {
+      "stream": "equipment", 
+      "tap_stream_id": "equipment_stream", 
+      "key_properties": [], 
+      "stream_alias": "equipment", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
+          "description": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "reference": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "location": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      }
+    }, 
+    {
+      "stream": "skill", 
+      "tap_stream_id": "skill_stream", 
+      "key_properties": [], 
+      "stream_alias": "skill", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
+          "name": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "reference": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "description": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      }
+    }, 
+    {
+      "stream": "site", 
+      "tap_stream_id": "site_stream", 
+      "key_properties": [], 
+      "stream_alias": "site", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
+          "floor-room": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "building": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "name": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "reference": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "status": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "address.postalCode": {
+            "type": [
+              "string"
+            ]
+          }, 
+          "nickname": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      }
+    }, 
+    {
+      "stream": "activity", 
+      "tap_stream_id": "activity_stream", 
+      "key_properties": [], 
+      "stream_alias": "activity", 
+      "metadata": [], 
+      "schema": {
+        "properties": {
+            "activityId": {
+                "type": ["null", "string"]
+            },
+            "contextProperties_stageType": {
+                "type": ["null", "string"]
+            },
+            "contextProperties_ref": {
+                "type": ["null", "string"]
+            },
+            "contextProperties_visitId": {
+                "type": ["null", "string"]
+            },
+            "createdBy": {
+                "type": ["null", "string"]
+            },
+            "createdOn": {
+                 "type": ["null", "string"],
+                 "format": "date-time"
+            },
+            "data_linkedWorkOrder": {
+                 "type": ["null", "string"]
+            },
+            "data_internalComments": {
+                 "type": ["null", "string"]
+            }
+        }
+    }
+    }
+  ]
+}

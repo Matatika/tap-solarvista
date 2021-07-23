@@ -1,0 +1,115 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["null", "string"]
+        },
+        "assignedUserId": {
+            "type": ["null", "string"]
+        },
+        "assignedUserName": {
+            "type": ["null", "string"]
+        },
+        "createdOn": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "lastModified": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "isCompleted": {
+            "type": ["null", "boolean"]
+        },
+        "currentStage_stageType": {
+            "type": ["null", "string"]        
+        },
+        "currentStage_lastTransitionTime": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "currentStage_lastTransitionId": {
+            "type": ["null", "string"]        
+        },
+        "currentWorkflowStageDisplayName": {
+            "type": ["null", "string"]
+        },
+        "currentWorkflowStageType": {
+            "type": ["null", "string"]
+        },
+        "workItemTemplateDisplayName": {
+            "type": ["null", "string"]
+        },
+        "workItemTemplateId": {
+            "type": ["null", "string"]
+        },
+        "workItemId": {
+            "type": ["null", "string"]
+        },
+        "tags": {
+            "type": ["array"],
+            "items": {
+                "type": "string"
+            }
+        },
+        "schedule_durationMinutes": {
+            "type": ["null", "number"]
+        },
+        "schedule_travelTimeMinutes": {
+            "type": ["null", "number"]
+        },
+        "schedule_startTime": {
+             "type": ["string"],
+             "format": "date-time"
+        },
+        "properties_model": {
+            "type": ["null", "string"]
+        },
+        "properties_operationalstatus": {
+            "type": ["null", "string"]
+        },
+        "properties_appliedresponsesla": {
+            "type": ["null", "number"]
+        },
+        "properties_responseduedate": {
+             "type": ["null", "string"],
+             "format": "date-time"
+        },
+        "properties_fixduedate": {
+             "type": ["null", "string"],
+             "format": "date-time"
+        },
+        "properties_project_id": {
+            "type": ["null", "string"]        
+        },
+        "properties_customer_id": {
+            "type": ["null", "string"]
+        },
+        "properties_site_id": {
+            "type": ["null", "string"]
+        },
+        "properties_territories_id": {
+            "type": ["null", "string"]
+        },
+        "properties_equipment_id": {
+            "type": ["null", "string"]
+        },
+        "properties_problem_id": {
+            "type": ["null", "string"]
+        },
+        "properties_charge": {
+            "type": ["null", "number"]
+        },
+        "properties_price-inc-tax": {
+            "type": ["null", "boolean"]
+        },
+        "properties_currency_id": {
+            "type": ["null", "string"]
+        },
+        "properties_duration-hours": {
+            "type": ["null", "number"]
+        },
+        "properties_source": {
+            "type": ["null", "string"]
+        }
+    }
+}

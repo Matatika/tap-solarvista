@@ -1,0 +1,12 @@
+{
+  "__comment__": "Specifying datasources here will overwrite stream metadata to select streams during --discover",
+  "datasources": ["customer", "equipment", "site", "work-item"],
+  
+  "__comment__": "workitem_detail_enabled drops back to full sync, rather than INCREMENTAL workitems keeping a lastModified state",
+  "workitem_detail_enabled": "true",
+  
+  "account": "[put your accountId here]",
+  "clientId": "[put your OAuth clientId here]",
+  "code": "[put your OAuth code here]",
+  "start_date": "2017-01-01T00:00:00Z"
+}

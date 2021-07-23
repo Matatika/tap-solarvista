@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "reference": {
+            "type": ["string"]
+        },
+        "name": {
+            "type": ["string"]
+        },
+        "description": {
+            "type": ["null", "string"]
+        },
+        "users": {
+            "type": ["array"]
+        }
+    }
+}

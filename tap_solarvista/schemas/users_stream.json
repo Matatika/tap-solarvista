@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "userId": {
+            "type": ["string"]
+        },
+        "displayName": {
+            "type": ["string"]
+        },
+        "email": {
+            "type": ["string"]
+        },
+        "isAssignable": {
+            "type": ["boolean"]
+        }
+    }
+}
