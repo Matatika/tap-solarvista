@@ -7,7 +7,7 @@
             "type": ["string"]
         },
         "location": {
-            "type": ["string"]
+            "type": ["null","string"]
         },
         "category_id": {
             "type": ["null", "string"]        
