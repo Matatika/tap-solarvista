@@ -17,6 +17,9 @@ def get_start(entity):
     """ Get the start point for incremental sync """
     if entity not in STATE:
         STATE[entity] = CONFIG['start_date']
+    # when a 'force_start_date' config has been supplied this forces the sync to start from the supplied date
+    if CONFIG.get('force_start_date'):
+        STATE[entity] = CONFIG['force_start_date']
 
     return STATE[entity]
 
