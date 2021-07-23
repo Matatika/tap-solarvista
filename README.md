@@ -58,6 +58,9 @@ Pull all the data
 tap-solarvista -c your_config.json --catalog catalog.json
 ```
 
+### Cloud hosting and SaaS
+Our team would be happy to help [www.matatika.com](https://www.matatika.com)
+
 ---
 
 Copyright &copy; 2020 Matatika
