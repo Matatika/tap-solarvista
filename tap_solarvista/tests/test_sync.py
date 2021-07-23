@@ -79,6 +79,23 @@ class TestSync(unittest.TestCase):
         tap_solarvista.sync.STATE = {}
         responses.reset()
 
+    def test_start_date(self):
+        """ Test basic configuration with a 'start_date' and 'force_start_date' """
+        mock_entity = 'mock_entity'
+        mock_start_date_config = {
+            'start_date': '2021-07-22T08:00:00Z',
+        }
+        tap_solarvista.sync.CONFIG = mock_start_date_config
+        actual_start_date = tap_solarvista.sync.get_start(mock_entity)
+        self.assertEqual(actual_start_date, '2021-07-22T08:00:00Z')
+        mock_force_start_date_config = {
+            'start_date': '2021-07-22T08:00:00Z',
+            'force_start_date': '2020-01-01T08:00:00Z',
+        }
+        tap_solarvista.sync.CONFIG = mock_force_start_date_config
+        actual_start_date = tap_solarvista.sync.get_start(mock_entity)
+        self.assertEqual(actual_start_date, '2020-01-01T08:00:00Z')
+
     @responses.activate  # intercept HTTP calls within this method
     def test_sync_token(self):
         """ Test basic sync requests token before requesting records """
