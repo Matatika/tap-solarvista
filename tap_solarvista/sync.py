@@ -250,7 +250,9 @@ def sync_workitemhistory(catalog, workitem_id, last_modified):
                 uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s/history" \
                     % (CONFIG.get('account'), workitem_id)
                 history_rows = transform_workitemhistory_to_rowdata(fetch("GET", uri, None))
-                if history_rows.get('rows'):
+                if not history_rows:
+                    LOGGER.error("No history for work item %s", workitem_id)
+                if history_rows and history_rows.get('rows'):
                     tap_data = []
                     for history_row in history_rows['rows']:
                         history_item = history_row['rowData']
