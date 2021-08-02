@@ -24,6 +24,9 @@
         "site_id": {
             "type": ["null", "string"]
         },
+        "equipment_id": {
+            "type": ["null", "string"]
+        },
         "primarystatus_id": {
             "type": ["null", "string"]
         },
