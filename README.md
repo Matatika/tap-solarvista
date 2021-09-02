@@ -63,7 +63,7 @@ Our team would be happy to help [www.matatika.com](https://www.matatika.com)
 
 ### License
 It is our intention that you must open source your platform if you use this software.
-[AGPLv3 License](https://github.com/Matatika/tap-solarvista/blob/add-license-1/LICENSE)
+[AGPLv3 License](https://github.com/Matatika/tap-solarvista/blob/master/LICENSE)
 
 
 ---
