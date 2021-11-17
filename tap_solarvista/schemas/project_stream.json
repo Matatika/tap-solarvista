@@ -65,10 +65,10 @@
         "operationalstatus": {
             "type": ["null", "string"]
         },
-        "verisae-category": {
+        "verisae-category_title": {
             "type": ["null", "string"]
         },
-        "verisae-subcategory": {
+        "verisae-subcategory_title": {
             "type": ["null", "string"]
         },
         "problemtype": {
