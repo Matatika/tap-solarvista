@@ -781,6 +781,18 @@
               "string"
             ]
           },
+          "verisae-category": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "verisae-subcategory": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "verisae-category_title": {
             "type": [
               "null",
