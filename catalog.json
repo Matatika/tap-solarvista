@@ -793,6 +793,18 @@
               "string"
             ]
           },
+          "verisae-category_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "verisae-subcategory_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "problemtype": {
             "type": [
               "null",
