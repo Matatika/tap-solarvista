@@ -28,7 +28,7 @@ steps:
 
 - script: make lint
   displayName: 'Lint.'
-  condition: eq(UsePythonVersion@0, 'Python39')
+  condition: eq($(python.version), '3.9')
 
 - script: make run
   displayName: 'Build and run'
