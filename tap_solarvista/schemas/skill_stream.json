@@ -10,7 +10,7 @@
             "type": ["null", "string"]
         },
         "users": {
-            "type": ["array"]
+            "type": ["null", "array"]
         }
     }
 }
