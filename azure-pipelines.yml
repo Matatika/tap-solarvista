@@ -10,12 +10,12 @@ pool:
   vmImage: 'ubuntu-latest'
 strategy:
   matrix:
-    Python35:	
-      python.version: '3.5'
-    Python36:
-      python.version: '3.6'
     Python37:
       python.version: '3.7'
+    Python38:
+      python.version: '3.8'
+    Python39:
+      python.version: '3.9'
 
 steps:
 - task: UsePythonVersion@0
@@ -26,8 +26,12 @@ steps:
 - script: make prepare-dev
   displayName: 'Install dependencies'
 
-- script: make lint run
-  displayName: 'Build, lint, run.'
+- script: make lint
+  displayName: 'Lint.'
+  condition: eq(UsePythonVersion@0, 'Python39')
+
+- script: make run
+  displayName: 'Build and run'
 
 - script: make install
   displayName: 'Install'
