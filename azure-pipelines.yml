@@ -26,10 +26,6 @@ steps:
 - script: make prepare-dev
   displayName: 'Install dependencies'
 
-- script: make lint
-  displayName: 'Lint.'
-  condition: eq('$(python.version)', '3.9')
-
 - script: make run
   displayName: 'Build and run'
 
@@ -40,3 +36,11 @@ steps:
     pip install pytest pytest-azurepipelines
     pytest
   displayName: 'pytest'
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+  condition: eq('$(python.version)', '3.9')
+
+- script: make lint
+  displayName: 'Lint.'
