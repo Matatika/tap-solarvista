@@ -13,7 +13,7 @@ extras = {
 
 setup(
     name="tap_solarvista",
-    version="0.1.1",
+    version="0.2.0",
     description="Singer.io tap for extracting data",
     author="Matatika",
     url="https://matatika.com",
