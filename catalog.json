@@ -1,301 +1,1105 @@
 {
   "streams": [
     {
-      "stream": "workitem", 
-      "tap_stream_id": "workitem_stream", 
-      "key_properties": [], 
-      "stream_alias": "work-item", 
+      "tap_stream_id": "appointment_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "appointmentId"
+      ],
+      "schema": {
+        "properties": {
+          "appointmentId": {
+            "type": [
+              "string"
+            ]
+          },
+          "label": {
+            "type": [
+              "string"
+            ]
+          },
+          "userId": {
+            "type": [
+              "string"
+            ]
+          },
+          "start": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "end": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          }
+        }
+      },
+      "stream": "appointment",
+      "stream_alias": "appointment",
       "metadata": [
         {
-          "breadcrumb": [], 
+          "breadcrumb": [],
           "metadata": {
             "selected": true
           }
         }
-      ], 
+      ]
+    },
+    {
+      "tap_stream_id": "activity_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "activityId"
+      ],
       "schema": {
         "properties": {
-          "properties_price-inc-tax": {
+          "activityId": {
             "type": [
-              "null", 
-              "boolean"
-            ]
-          }, 
-          "properties_site_id": {
-            "type": [
-              "null", 
+              "null",
               "string"
             ]
-          }, 
-          "properties_customer_id": {
+          },
+          "contextProperties_stageType": {
             "type": [
-              "null", 
+              "null",
               "string"
             ]
-          }, 
-          "properties_equipment_id": {
+          },
+          "contextProperties_ref": {
             "type": [
-              "null", 
+              "null",
               "string"
             ]
-          }, 
+          },
+          "contextProperties_visitId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdBy": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdOn": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "data_linkedWorkOrder": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "data_internalComments": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "stream": "activity",
+      "stream_alias": "activity",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "skill_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "reference"
+      ],
+      "schema": {
+        "properties": {
           "reference": {
             "type": [
-              "null", 
               "string"
             ]
-          }, 
-          "tags": {
+          },
+          "name": {
             "type": [
-              "null", 
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "users": {
+            "type": [
               "array"
             ]
-          }, 
-          "properties_currency_id": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "currentWorkflowStageDisplayName": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "workItemId": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "workItemTemplateId": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "properties_duration-hours": {
-            "type": [
-              "null", 
-              "number"
-            ]
-          }, 
-          "assignedUserName": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "workItemTemplateDisplayName": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "properties_problem_id": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "currentWorkflowStageType": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "properties_charge": {
-            "type": [
-              "null", 
-              "number"
-            ]
-          }, 
-          "assignedUserId": {
-            "type": [
-              "null", 
-              "string"
-            ]
-          }, 
-          "createdOn": {
-            "type": [
-              "string"
-            ], 
-            "format": "date-time"
           }
         }
-      }
-    }, 
+      },
+      "stream": "skill",
+      "stream_alias": "skill",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
     {
-      "stream": "customer", 
-      "tap_stream_id": "customer_stream", 
-      "key_properties": [], 
-      "stream_alias": "customer", 
-      "metadata": [], 
+      "tap_stream_id": "customer_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "reference"
+      ],
       "schema": {
         "properties": {
+          "reference": {
+            "type": [
+              "string"
+            ]
+          },
+          "nickname": {
+            "type": [
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "string"
+            ]
+          },
           "status": {
             "type": [
               "string"
             ]
-          }, 
+          },
           "terms-days": {
             "type": [
-              "null", 
+              "null",
               "number"
             ]
-          }, 
-          "nickname": {
-            "type": [
-              "string"
-            ]
-          }, 
-          "name": {
-            "type": [
-              "string"
-            ]
-          }, 
+          }
+        }
+      },
+      "stream": "customer",
+      "stream_alias": "customer",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "equipment_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "reference"
+      ],
+      "schema": {
+        "properties": {
           "reference": {
             "type": [
               "string"
             ]
-          }
-        }
-      }
-    }, 
-    {
-      "stream": "equipment", 
-      "tap_stream_id": "equipment_stream", 
-      "key_properties": [], 
-      "stream_alias": "equipment", 
-      "metadata": [], 
-      "schema": {
-        "properties": {
+          },
           "description": {
             "type": [
               "string"
             ]
-          }, 
-          "reference": {
-            "type": [
-              "string"
-            ]
-          }, 
+          },
           "location": {
             "type": [
+              "null",
+              "string"
+            ]
+          },
+          "category_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "category_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "asset-number": {
+            "type": [
+              "null",
               "string"
             ]
           }
         }
-      }
-    }, 
+      },
+      "stream": "equipment",
+      "stream_alias": "equipment",
+      "metadata": []
+    },
     {
-      "stream": "skill", 
-      "tap_stream_id": "skill_stream", 
-      "key_properties": [], 
-      "stream_alias": "skill", 
-      "metadata": [], 
+      "tap_stream_id": "users_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "userId"
+      ],
       "schema": {
         "properties": {
-          "name": {
+          "userId": {
             "type": [
               "string"
             ]
-          }, 
+          },
+          "displayName": {
+            "type": [
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "string"
+            ]
+          },
+          "isAssignable": {
+            "type": [
+              "boolean"
+            ]
+          }
+        }
+      },
+      "stream": "users",
+      "stream_alias": "users",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "workitemhistory_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "workItemHistoryId"
+      ],
+      "schema": {
+        "properties": {
+          "workItemHistoryId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workItemId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workflowId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lastModified": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "stage_assignedUser_displayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_assignedUser_email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_assignedUser_userId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_stageDisplayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_stageType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_transition_fromStageType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_transition_receivedAt": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "stage_transition_toStageType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_transition_transitionedAt": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "stage_transition_transitionedBy_displayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_transition_transitionedBy_email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_transition_transitionedBy_userId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stage_transition_transitionId": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      },
+      "stream": "workitemhistory",
+      "stream_alias": "work-item-history",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "workitem_stream",
+      "replication_key": "lastModified",
+      "replication_method": "INCREMENTAL",
+      "key_properties": [
+        "reference"
+      ],
+      "schema": {
+        "properties": {
           "reference": {
             "type": [
+              "null",
               "string"
             ]
-          }, 
+          },
+          "assignedUserId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "assignedUserName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdOn": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "lastModified": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "isCompleted": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "currentStage_stageType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "currentStage_lastTransitionTime": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "currentStage_lastTransitionId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "currentWorkflowStageDisplayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "currentWorkflowStageType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workItemTemplateDisplayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workItemTemplateId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workItemId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "schedule_durationMinutes": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "schedule_travelTimeMinutes": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "schedule_startTime": {
+            "format": "date-time",
+            "type": [
+              "string"
+            ]
+          },
+          "properties_model": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_operationalstatus": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_appliedresponsesla": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "properties_responseduedate": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_fixduedate": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_project_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_customer_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_site_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_territories_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_equipment_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_problem_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_charge": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "properties_price-inc-tax": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "properties_currency_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "properties_duration-hours": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "properties_source": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "stream": "workitem",
+      "stream_alias": "work-item",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "project_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "reference"
+      ],
+      "schema": {
+        "properties": {
+          "reference": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdon": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lastModified": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "closedon": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "customer_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bill-to_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "site_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "equipment_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "primarystatus_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "secondarystatus_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "project-type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "description": {
             "type": [
+              "null",
               "string"
+            ]
+          },
+          "assetnumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "serialnumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "model": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "workcenter": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "responseduedate": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fixduedate": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "operationalstatus": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "verisae-category": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "verisae-subcategory": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "verisae-category_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "verisae-subcategory_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "problemtype": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "code": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "objectives": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order-ref": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "phonenumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "revenue-expected": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "costs-expected": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "working-time-expected": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "travel-time-expected": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "progress-percent": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "progress-statement": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "memo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "appliedresponsesla": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "appliedfixsla": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "workitemcreated": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "etc": {
+            "type": [
+              "null",
+              "boolean"
             ]
           }
         }
-      }
-    }, 
+      },
+      "stream": "project",
+      "stream_alias": "project",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
     {
-      "stream": "site", 
-      "tap_stream_id": "site_stream", 
-      "key_properties": [], 
-      "stream_alias": "site", 
-      "metadata": [], 
+      "tap_stream_id": "territory_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "reference"
+      ],
       "schema": {
         "properties": {
-          "floor-room": {
-            "type": [
-              "string"
-            ]
-          }, 
-          "building": {
-            "type": [
-              "string"
-            ]
-          }, 
-          "name": {
-            "type": [
-              "string"
-            ]
-          }, 
           "reference": {
             "type": [
               "string"
             ]
-          }, 
+          },
+          "name": {
+            "type": [
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "status": {
             "type": [
               "string"
             ]
-          }, 
-          "address.postalCode": {
+          },
+          "office-depot_id": {
             "type": [
+              "null",
               "string"
             ]
-          }, 
-          "nickname": {
+          },
+          "category_id": {
             "type": [
+              "null",
+              "string"
+            ]
+          },
+          "category_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "category_subtitle": {
+            "type": [
+              "null",
               "string"
             ]
           }
         }
-      }
-    }, 
+      },
+      "stream": "territory",
+      "stream_alias": "territory",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
+    },
     {
-      "stream": "activity", 
-      "tap_stream_id": "activity_stream", 
-      "key_properties": [], 
-      "stream_alias": "activity", 
-      "metadata": [], 
+      "tap_stream_id": "site_stream",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [
+        "reference"
+      ],
       "schema": {
         "properties": {
-            "activityId": {
-                "type": ["null", "string"]
-            },
-            "contextProperties_stageType": {
-                "type": ["null", "string"]
-            },
-            "contextProperties_ref": {
-                "type": ["null", "string"]
-            },
-            "contextProperties_visitId": {
-                "type": ["null", "string"]
-            },
-            "createdBy": {
-                "type": ["null", "string"]
-            },
-            "createdOn": {
-                 "type": ["null", "string"],
-                 "format": "date-time"
-            },
-            "data_linkedWorkOrder": {
-                 "type": ["null", "string"]
-            },
-            "data_internalComments": {
-                 "type": ["null", "string"]
-            }
+          "reference": {
+            "type": [
+              "string"
+            ]
+          },
+          "nickname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "floor-room": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "building": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address_postalCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "string"
+            ]
+          },
+          "latitude": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "longitude": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "customer_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "time-zone_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "category_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "territory_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hb-region": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hb-area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
         }
-    }
+      },
+      "stream": "site",
+      "stream_alias": "site",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "selected": true
+          }
+        }
+      ]
     }
   ]
 }

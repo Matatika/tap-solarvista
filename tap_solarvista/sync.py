@@ -130,8 +130,7 @@ def sync_workitems_by_filter(stream, bookmark_property, continue_from, predefine
         LOGGER.info("Syncing work-items with filter %s", predefined_filter)
         query['filterGroups'] = [{ 'filters': predefined_filter }]
     LOGGER.info("Syncing work-items since %s", start)
-    uri = "https://api.solarvista.com/workflow/v4/%s/workItems/search" \
-        % (CONFIG.get('account'))
+    uri = f"https://api.solarvista.com/workflow/v4/{CONFIG.get('account')}/workItems/search"
     body = json.dumps(query)
     response_data = fetch("POST", uri, body)
     return transform_search_to_look_like_rowdata(response_data)
@@ -187,8 +186,8 @@ def sync_datasource(stream, continue_from):
     LOGGER.debug("sync_datasource %s", stream.stream_alias)
     if stream.stream_alias is not None:
         body = json.dumps({})
-        uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" \
-            % (CONFIG.get('account'), stream.stream_alias)
+        uri = (f"https://api.solarvista.com/datagateway/v3/{CONFIG.get('account')}"
+        f"/datasources/ref/{stream.stream_alias}/data/query")
         if continue_from is not None:
             body = json.dumps({
                 "continuationToken": continue_from
@@ -204,8 +203,8 @@ def sync_appointment(stream, continue_from):
     user_continue_from = None
     while True:
         body = None
-        uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" \
-            % (CONFIG.get('account'), 'users')
+        uri = (f"https://api.solarvista.com/datagateway/v3/{CONFIG.get('account')}"
+        f"/datasources/ref/{'users'}/data/query")
         if user_continue_from is not None:
             body = json.dumps({
                 "continuationToken": user_continue_from
@@ -225,8 +224,8 @@ def sync_appointment(stream, continue_from):
 
     if users and stream.stream_alias is not None:
         body = None
-        uri = "https://api.solarvista.com/calendar/v2/%s/appointments/search/%s" \
-            % (CONFIG.get('account'), 'users')
+        uri = (f"https://api.solarvista.com/calendar/v2/{CONFIG.get('account')}"
+        f"/appointments/search/{'users'}")
         one_year_past = datetime.now() - relativedelta(years=1)
         one_year_future = datetime.now() + relativedelta(years=1)
         query = {
@@ -248,8 +247,8 @@ def sync_workitemhistory(catalog, workitem_id, last_modified):
         workitem_history_stream = catalog.get_stream('workitemhistory_stream')
         if workitem_history_stream and workitem_history_stream.is_selected():
             with singer.metrics.record_counter(workitem_history_stream.tap_stream_id) as counter:
-                uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s/history" \
-                    % (CONFIG.get('account'), workitem_id)
+                uri = (f"https://api.solarvista.com/workflow/v4/{CONFIG.get('account')}"
+                f"/workItems/id/{workitem_id}/history")
                 history_rows = transform_workitemhistory_to_rowdata(fetch("GET", uri, None))
                 if not history_rows:
                     LOGGER.error("No history for work item %s", workitem_id)
@@ -274,8 +273,8 @@ def sync_activity(catalog, workitem_id):
         activity_stream = catalog.get_stream('activity_stream')
         if activity_stream and activity_stream.is_selected():
             with singer.metrics.record_counter(activity_stream.tap_stream_id) as counter:
-                uri = "https://api.solarvista.com/activity/v2/%s/activities/context/%s" \
-            % (CONFIG.get('account'), workitem_id)
+                uri = (f"https://api.solarvista.com/activity/v2/{CONFIG.get('account')}"
+                    f"/activities/context/{workitem_id}")
             activity_rows = transform_activity_to_look_like_rowdata(fetch("GET", uri, None))
             if activity_rows is not None:
                 if activity_rows.get('rows'):
@@ -289,8 +288,8 @@ def sync_activity(catalog, workitem_id):
 def fetch_workitemdetail(workitem_id):
     """ Fetch workitem detail """
     if workitem_id is not None:
-        uri = "https://api.solarvista.com/workflow/v4/%s/workItems/id/%s" \
-            % (CONFIG.get('account'), workitem_id)
+        uri = (f"https://api.solarvista.com/workflow/v4/{CONFIG.get('account')}"
+            f"/workItems/id/{workitem_id}")
         response_data = fetch("GET", uri, None)
         return response_data
     return None
@@ -368,8 +367,8 @@ def get_access_token():
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded"
     }
-    body = "client_id=pat&grant_type=password&username=%s&password=%s" \
-        % (CONFIG.get('clientId'), CONFIG.get('code'))
+    body = (f"client_id=pat&grant_type=password&username={CONFIG.get('clientId')}"
+        f"&password={CONFIG.get('code')}")
     response = _fetch("POST", headers, "https://auth.solarvista.com/connect/token", body, 0)
     response.raise_for_status()
     if response is not None:
