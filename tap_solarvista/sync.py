@@ -184,8 +184,9 @@ def transform_appointments_to_look_like_rowdata(response_data):
 
 def sync_datasource(stream, continue_from):
     """ Sync data from tap source with continuation """
+    LOGGER.debug("sync_datasource %s", stream.stream_alias)
     if stream.stream_alias is not None:
-        body = None
+        body = json.dumps({})
         uri = "https://api.solarvista.com/datagateway/v3/%s/datasources/ref/%s/data/query" \
             % (CONFIG.get('account'), stream.stream_alias)
         if continue_from is not None:
@@ -320,6 +321,7 @@ def transform_workitemhistory_to_rowdata(response_data):
 
 def fetch(method, uri, body):
     """ Fetch from Solarvista API """
+    LOGGER.debug("FETCH %s", uri)
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
