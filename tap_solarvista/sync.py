@@ -202,7 +202,7 @@ def sync_appointment(stream, continue_from):
     users = []
     user_continue_from = None
     while True:
-        body = None
+        body = json.dumps({})
         uri = (f"https://api.solarvista.com/datagateway/v3/{CONFIG.get('account')}"
         f"/datasources/ref/{'users'}/data/query")
         if user_continue_from is not None:
@@ -223,7 +223,7 @@ def sync_appointment(stream, continue_from):
             break
 
     if users and stream.stream_alias is not None:
-        body = None
+        body = json.dumps({})
         uri = (f"https://api.solarvista.com/calendar/v2/{CONFIG.get('account')}"
         f"/appointments/search/{'users'}")
         one_year_past = datetime.now() - relativedelta(years=1)
