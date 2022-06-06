@@ -53,14 +53,13 @@ def main():
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
 
     selected_datasources = args.config.get('datasources')
-    if selected_datasources:
+
+    if args.catalog:
+        data_catalog = args.catalog
+    elif selected_datasources:
         data_catalog = catalog.discover(selected_datasources)
     else:
-        if args.catalog:
-            data_catalog = args.catalog
-        else:
-            data_catalog = catalog.discover({})
-
+        data_catalog = catalog.discover({})
 
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
@@ -68,7 +67,6 @@ def main():
     # Otherwise run in sync mode
     else:
         sync.sync_all_data(args.config, args.state, data_catalog)
-
 
 if __name__ == "__main__":
     main()
