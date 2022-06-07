@@ -56,7 +56,7 @@ def main():
 
     if args.catalog:
         data_catalog = args.catalog
-    elif selected_datasources:
+    if selected_datasources:
         data_catalog = catalog.discover(selected_datasources)
     else:
         data_catalog = catalog.discover({})
