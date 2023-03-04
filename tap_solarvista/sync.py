@@ -202,7 +202,7 @@ def sync_appointment(stream, continue_from):
     users = []
     user_continue_from = None
     while True:
-        body = None
+        body = json.dumps({})
         uri = (f"https://api.solarvista.com/datagateway/v3/{CONFIG.get('account')}"
         f"/datasources/ref/{'users'}/data/query")
         if user_continue_from is not None:
@@ -223,7 +223,7 @@ def sync_appointment(stream, continue_from):
             break
 
     if users and stream.stream_alias is not None:
-        body = None
+        body = json.dumps({})
         uri = (f"https://api.solarvista.com/calendar/v2/{CONFIG.get('account')}"
         f"/appointments/search/{'users'}")
         one_year_past = datetime.now() - relativedelta(years=1)
@@ -379,7 +379,11 @@ def get_access_token():
             return access_token
     return None
 
-lowerFirstCharacter = lambda s: s[:1].lower() + s[1:] if s else ''
+def lower_first_character(string):
+    """ Lower the first character of a string """
+    if string:
+        return string[:1].lower() + string[1:]
+    return ''
 
 def flatten_json(unformated_json):
     """ Flatten a json object, returning a single level underscore separated json structure """
@@ -388,7 +392,7 @@ def flatten_json(unformated_json):
     def flatten(json_structure, name=''):
         if isinstance(json_structure, dict):
             for element in json_structure:
-                flatten(json_structure[element], name + lowerFirstCharacter(element) + '_')
+                flatten(json_structure[element], name + lower_first_character(element) + '_')
         else:
             out[name[:-1]] = json_structure
 
