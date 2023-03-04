@@ -265,7 +265,7 @@ def sync_workitemhistory(catalog, workitem_id, last_modified):
                                 history_item['stage_transition_transitionedAt']
                         tap_data.append(history_item)
                         counter.increment()
-                    write_data(workitem_history_stream, tap_data)
+                    write_data(workitem_history_stream, tap_data, False)
 
 def sync_activity(catalog, workitem_id):
     """ Sync data from activity """
@@ -283,7 +283,7 @@ def sync_activity(catalog, workitem_id):
                         activity_item = activity_row['rowData']
                         tap_data.append(flatten_json(activity_item))
                         counter.increment()
-                    write_data(activity_stream, tap_data)
+                    write_data(activity_stream, tap_data, False)
 
 def fetch_workitemdetail(workitem_id):
     """ Fetch workitem detail """
@@ -395,7 +395,7 @@ def flatten_json(unformated_json):
     flatten(unformated_json)
     return out
 
-def write_data(stream, tap_data):
+def write_data(stream, tap_data, write_state = True):
     """ Write the fetched data to singer records and update state """
     bookmark_column = stream.replication_key
     state_key = stream.tap_stream_id
@@ -418,5 +418,6 @@ def write_data(stream, tap_data):
 
     if bookmark_column and not is_sorted:
         utils.update_state(STATE, state_key, max_bookmark)
-    LOGGER.info("Writing state [%s]", STATE)
-    singer.write_state(STATE)
+    if write_state:
+        LOGGER.info("Writing state [%s]", STATE)
+        singer.write_state(STATE)
