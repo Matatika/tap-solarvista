@@ -335,7 +335,7 @@ def fetch(method, uri, body):
 
 def _fetch(method, headers, uri, body, refresh_auth):
     """ Internal fetch to allow access token to be refreshed """
-    retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+    retries = Retry(total=6, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
     http = requests.Session()
     http.mount("https://", TimeoutHttpAdapter(max_retries=retries))
     response = None
